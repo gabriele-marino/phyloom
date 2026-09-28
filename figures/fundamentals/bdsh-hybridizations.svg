@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="1435.3918"
+   height="764.11475"
+   viewBox="0 0 1435.3918 764.11474"
+   role="img"
+   aria-labelledby="title desc"
+   version="1.1"
+   id="svg37"
+   sodipodi:docname="bdsh-hybridizations.svg"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview37"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="0.56848588"
+     inkscape:cx="717.69592"
+     inkscape:cy="363.24561"
+     inkscape:window-width="1512"
+     inkscape:window-height="844"
+     inkscape:window-x="0"
+     inkscape:window-y="33"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg37" />
+  <title
+     id="title">BDSH hybridization network primitives</title>
+  <desc
+     id="desc">Three horizontal forward-time diagrams compare Lineage-degenerative, Lineage-neutral, and Lineage-generative hybridization. Solid outlined parents are replaced at the event; dotted outlined nodes remain active. Purple dotted nodes are hybrid descendants with two ancestors.</desc>
+  <defs
+     id="defs1">
+    <style
+       id="style1">
+      .title { font: 700 44px system-ui, -apple-system, Segoe UI, sans-serif; fill: #0f172a; }
+      .subtitle { font: 500 21px system-ui, -apple-system, Segoe UI, sans-serif; fill: #475569; }
+      .card { fill: #f8fafc; stroke: #dbe4ee; stroke-width: 2; }
+      .heading { font: 700 27px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #0f172a; text-anchor: middle; }
+      .meaning { font: 500 18px system-ui, -apple-system, Segoe UI, sans-serif; fill: #475569; text-anchor: middle; }
+      .edge { fill: none; stroke: #0f766e; stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; }
+      .active { fill: #fff; stroke: #0f172a; stroke-width: 4; stroke-dasharray: 2 8; stroke-linecap: round; }
+      .inactive { fill: #fff; stroke: #0f172a; stroke-width: 4; }
+      .offspring { fill: #fff; stroke: #0891b2; stroke-width: 3; }
+      .hybrid { fill: #fff; stroke: #7c3aed; stroke-width: 4; stroke-dasharray: 2 8; stroke-linecap: round; }
+      .letter { font: 700 18px system-ui, -apple-system, Segoe UI, sans-serif; fill: #0f172a; text-anchor: middle; dominant-baseline: central; }
+      .hybrid-letter { font: 700 17px system-ui, -apple-system, Segoe UI, sans-serif; fill: #7c3aed; text-anchor: middle; dominant-baseline: central; }
+      .offspring-letter { font: 700 14px system-ui, -apple-system, Segoe UI, sans-serif; fill: #0f172a; text-anchor: middle; dominant-baseline: central; }
+      .legend { font: 500 17px system-ui, -apple-system, Segoe UI, sans-serif; fill: #475569; }
+      .legend-line { stroke: #0f766e; stroke-width: 8; stroke-linecap: round; }
+      .timeline-line { fill: none; stroke: #94a3b8; stroke-width: 4; stroke-linecap: round; marker-end: url(#timeline-arrow); }
+      .timeline-label { font: 600 16px system-ui, -apple-system, Segoe UI, sans-serif; fill: #64748b; }
+    </style>
+    <marker
+       id="timeline-arrow"
+       markerWidth="14"
+       markerHeight="14"
+       refX="11"
+       refY="7"
+       orient="auto"
+       markerUnits="userSpaceOnUse">
+      <path
+         d="M 0,0 14,7 0,14 Z"
+         fill="#94a3b8"
+         id="path1" />
+    </marker>
+  </defs>
+  <g
+     id="ldh"
+     transform="matrix(0.99990094,0,0,1.0536601,-32.276822,-137.23441)">
+    <rect
+       class="card"
+       x="49.858608"
+       y="149.8586"
+       width="450.28281"
+       height="515.26123"
+       rx="20.012568"
+       id="rect2" />
+    <text
+       class="heading"
+       x="275"
+       y="205"
+       id="text3"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:27px;line-height:normal;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">LDH</text>
+    <text
+       class="meaning"
+       x="275"
+       y="238"
+       id="text4"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:18px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Lineage-degenerative hybridization</text>
+    <circle
+       class="inactive"
+       cx="160"
+       cy="385"
+       r="27"
+       id="circle4" />
+    <text
+       class="letter"
+       x="160"
+       y="385"
+       id="text5"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:18px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">A</text>
+    <circle
+       class="inactive"
+       cx="160"
+       cy="580"
+       r="27"
+       id="circle5" />
+    <text
+       class="letter"
+       x="160"
+       y="580"
+       id="text6"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:18px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">B</text>
+    <path
+       class="edge"
+       d="m 187,385 c 63,0 103,70 167,90"
+       id="path6" />
+    <path
+       class="edge"
+       d="m 187,580 c 63,0 103,-70 167,-90"
+       id="path7" />
+    <circle
+       class="hybrid"
+       cx="385"
+       cy="482"
+       r="31"
+       id="circle7" />
+    <text
+       class="hybrid-letter"
+       x="385"
+       y="482"
+       id="text7"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">H</text>
+  </g>
+  <g
+     id="lnh"
+     transform="translate(-32.304061,-129.21624)">
+    <rect
+       class="card"
+       x="524.88147"
+       y="149.88145"
+       width="450.23709"
+       height="543.58582"
+       rx="20.010536"
+       id="rect7" />
+    <text
+       class="heading"
+       x="750"
+       y="205"
+       id="text8"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:27px;line-height:normal;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">LNH</text>
+    <text
+       class="meaning"
+       x="750"
+       y="238"
+       id="text9"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:18px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Lineage-neutral hybridization</text>
+    <circle
+       class="inactive"
+       cx="625"
+       cy="395"
+       r="27"
+       id="circle9" />
+    <text
+       class="letter"
+       x="625"
+       y="395"
+       id="text10"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:18px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">A</text>
+    <circle
+       class="inactive"
+       cx="625"
+       cy="615"
+       r="27"
+       id="circle10" />
+    <text
+       class="letter"
+       x="625"
+       y="615"
+       id="text11"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:18px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">B</text>
+    <path
+       class="edge"
+       d="m 652,388 c 68,-8 133,-33 206,-33"
+       id="path11" />
+    <path
+       class="edge"
+       d="m 649,414 c 41,18 57,51 70,70"
+       id="path12" />
+    <path
+       class="edge"
+       d="m 762,495 c 38,0 70,50 106,68"
+       id="path13" />
+    <path
+       class="edge"
+       d="m 652,615 c 78,0 136,-30 207,-30"
+       id="path14" />
+    <circle
+       class="offspring"
+       cx="740"
+       cy="495"
+       r="22"
+       id="circle14" />
+    <text
+       class="offspring-letter"
+       x="740"
+       y="495"
+       id="text14"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:14px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">o</text>
+    <circle
+       class="active"
+       cx="890"
+       cy="355"
+       r="27"
+       id="circle15" />
+    <text
+       class="letter"
+       x="890"
+       y="355"
+       id="text15"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:18px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">A</text>
+    <circle
+       class="hybrid"
+       cx="890"
+       cy="585"
+       r="31"
+       id="circle16" />
+    <text
+       class="hybrid-letter"
+       x="890"
+       y="585"
+       id="text16"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">H</text>
+  </g>
+  <g
+     id="lgh"
+     transform="translate(-32.304061,-129.21624)">
+    <rect
+       class="card"
+       x="999.88324"
+       y="149.88321"
+       width="450.23358"
+       height="545.76642"
+       rx="20.010382"
+       id="rect16" />
+    <text
+       class="heading"
+       x="1225"
+       y="205"
+       id="text17"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:27px;line-height:normal;font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">LGH</text>
+    <text
+       class="meaning"
+       x="1225"
+       y="238"
+       id="text18"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:18px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Lineage-generative hybridization</text>
+    <circle
+       class="inactive"
+       cx="1085"
+       cy="385"
+       r="27"
+       id="circle18" />
+    <text
+       class="letter"
+       x="1085"
+       y="385"
+       id="text19"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:18px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">A</text>
+    <circle
+       class="inactive"
+       cx="1085"
+       cy="620"
+       r="27"
+       id="circle19" />
+    <text
+       class="letter"
+       x="1085"
+       y="620"
+       id="text20"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:18px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">B</text>
+    <path
+       class="edge"
+       d="M 1113.0526,385 C 1191.0526,380 1270,350 1358,350"
+       id="path20"
+       sodipodi:nodetypes="cc" />
+    <path
+       class="edge"
+       d="M 1107.4667,403.28311 C 1134.4667,419.28311 1156,450 1183,465"
+       id="path21"
+       sodipodi:nodetypes="cc" />
+    <path
+       class="edge"
+       d="M 1113.0526,622.1052 C 1191.0526,627.1052 1270,650 1358,650"
+       id="path22"
+       sodipodi:nodetypes="cc" />
+    <path
+       class="edge"
+       d="M 1107.2936,600.22453 C 1134.2936,584.22453 1156,550 1183,535"
+       id="path23"
+       sodipodi:nodetypes="cc" />
+    <path
+       class="edge"
+       d="m 1227,465 c 43,0 73,20 112,35"
+       id="path24" />
+    <path
+       class="edge"
+       d="m 1227,535 c 43,0 73,-20 112,-35"
+       id="path25" />
+    <circle
+       class="offspring"
+       cx="1205"
+       cy="465"
+       r="22"
+       id="circle25" />
+    <text
+       class="offspring-letter"
+       x="1205"
+       y="465"
+       id="text25"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:14px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">o₁</text>
+    <circle
+       class="offspring"
+       cx="1205"
+       cy="535"
+       r="22"
+       id="circle26" />
+    <text
+       class="offspring-letter"
+       x="1205"
+       y="535"
+       id="text26"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:14px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">o₂</text>
+    <circle
+       class="active"
+       cx="1385"
+       cy="350"
+       r="27"
+       id="circle27" />
+    <text
+       class="letter"
+       x="1385"
+       y="350"
+       id="text27"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:18px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">A</text>
+    <circle
+       class="hybrid"
+       cx="1370"
+       cy="500"
+       r="31"
+       id="circle28" />
+    <text
+       class="hybrid-letter"
+       x="1370"
+       y="500"
+       id="text28"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">H</text>
+    <circle
+       class="active"
+       cx="1385"
+       cy="650"
+       r="27"
+       id="circle29" />
+    <text
+       class="letter"
+       x="1385"
+       y="650"
+       id="text29"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:18px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">B</text>
+  </g>
+  <text
+     class="timeline-label"
+     x="42.695938"
+     y="617.78375"
+     text-anchor="start"
+     id="text30"
+     style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:16px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">earlier</text>
+  <text
+     class="timeline-label"
+     x="717.69592"
+     y="617.78375"
+     text-anchor="middle"
+     id="text31"
+     style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:16px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">forward simulation time</text>
+  <text
+     class="timeline-label"
+     x="1392.6959"
+     y="617.78375"
+     text-anchor="end"
+     id="text32"
+     style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:16px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">later</text>
+  <line
+     class="timeline-line"
+     x1="62.695938"
+     y1="632.78375"
+     x2="1367.6959"
+     y2="632.78375"
+     id="line32" />
+  <circle
+     class="active"
+     cx="224.69594"
+     cy="692.78375"
+     r="15"
+     id="circle33" />
+  <text
+     class="legend"
+     x="249.69594"
+     y="698.78375"
+     id="text34"
+     style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Active lineage</text>
+  <circle
+     class="inactive"
+     cx="429.69595"
+     cy="692.78375"
+     r="15"
+     id="circle34" />
+  <text
+     class="legend"
+     x="454.69595"
+     y="698.78375"
+     id="text35"
+     style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Ended parent lineage</text>
+  <circle
+     class="hybrid"
+     cx="689.69592"
+     cy="692.78375"
+     r="15"
+     id="circle35" />
+  <text
+     class="legend"
+     x="714.69592"
+     y="698.78375"
+     id="text36"
+     style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Active hybrid descendant</text>
+  <circle
+     class="offspring"
+     cx="978.69592"
+     cy="692.78375"
+     r="15"
+     id="circle36" />
+  <text
+     class="legend"
+     x="1003.6959"
+     y="698.78375"
+     id="text37"
+     style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Offspring before hybridization</text>
+</svg>

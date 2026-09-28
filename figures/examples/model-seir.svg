@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title-model-seir desc-model-seir" width="1150" height="500" viewBox="0 0 1150 500">
+  <title id="title-model-seir">Susceptible-exposed-infectious-recovered model</title>
+  <desc id="desc-model-seir">Infectious lineages I draw on the susceptible pool S to create new exposed lineages E at rate lambda. Exposed lineages become infectious at rate 1 over T_E. Infectious lineages are observed (sampled) at rate mu times s, moving to O, or recover unobserved at rate mu times one minus s, moving to R.</desc>
+  <defs>
+    <marker id="arrow-teal-model-seir" viewBox="0 0 24 24" refX="1" refY="12" markerWidth="24" markerHeight="24" markerUnits="userSpaceOnUse" overflow="visible" orient="auto">
+      <path d="M 1,3 23,12 1,21 Z" fill="#0891b2"/>
+    </marker>
+    <marker id="arrow-blue-model-seir" viewBox="0 0 24 24" refX="1" refY="12" markerWidth="24" markerHeight="24" markerUnits="userSpaceOnUse" overflow="visible" orient="auto">
+      <path d="M 1,3 23,12 1,21 Z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-dark-model-seir" viewBox="0 0 24 24" refX="1" refY="12" markerWidth="24" markerHeight="24" markerUnits="userSpaceOnUse" overflow="visible" orient="auto">
+      <path d="M 1,3 23,12 1,21 Z" fill="#0f172a"/>
+    </marker>
+    <marker id="arrow-red-model-seir" viewBox="0 0 24 24" refX="1" refY="12" markerWidth="24" markerHeight="24" markerUnits="userSpaceOnUse" overflow="visible" orient="auto">
+      <path d="M 1,3 23,12 1,21 Z" fill="#dc2626"/>
+    </marker>
+    <marker id="arrow-gray-model-seir" viewBox="0 0 24 24" refX="1" refY="12" markerWidth="24" markerHeight="24" markerUnits="userSpaceOnUse" overflow="visible" orient="auto">
+      <path d="M 1,3 23,12 1,21 Z" fill="#64748b"/>
+    </marker>
+    <style>
+      .compartment-label { font: 700 64px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #0f172a; text-anchor: middle; }
+      .compartment-name { font: 600 24px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #334155; text-anchor: middle; }
+      .rate-label { font: 700 34px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #0f172a; text-anchor: middle; }
+      .var-label { font: 700 28px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #0f172a; text-anchor: middle; }
+      .var-note { font: 600 20px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #475569; text-anchor: middle; }
+      .teal-compartment { fill: #ecfeff; stroke: #0891b2; stroke-width: 5; }
+      .blue-compartment { fill: #eff6ff; stroke: #2563eb; stroke-width: 5; }
+      .s-compartment { fill: #f8fafc; stroke: #64748b; stroke-width: 5; }
+      .u-compartment { fill: #fef2f2; stroke: #dc2626; stroke-width: 5; }
+      .pool-fill { fill: #a5dbe8; }
+      .pool-frame { fill: none; stroke: #0891b2; stroke-width: 5; }
+      .teal-line { fill: none; stroke: #0891b2; stroke-width: 5; }
+      .teal-arrow { fill: none; stroke: #0891b2; stroke-width: 5; stroke-linejoin: round; marker-end: url(#arrow-teal-model-seir); }
+      .blue-line { fill: none; stroke: #2563eb; stroke-width: 5; }
+      .blue-arrow { fill: none; stroke: #2563eb; stroke-width: 5; stroke-linejoin: round; marker-end: url(#arrow-blue-model-seir); }
+      .event-arrow { fill: none; stroke: #0f172a; stroke-width: 5; stroke-linejoin: round; marker-end: url(#arrow-dark-model-seir); }
+      .scheduled-arrow { fill: none; stroke: #0f172a; stroke-width: 4; stroke-dasharray: 12 9; stroke-linejoin: round; marker-end: url(#arrow-dark-model-seir); }
+      .decision-point { fill: #0f172a; stroke: #fff; stroke-width: 4; }
+      .sampled-arrow { fill: none; stroke: #64748b; stroke-width: 5; stroke-linejoin: round; marker-end: url(#arrow-gray-model-seir); }
+      .unsampled-arrow { fill: none; stroke: #dc2626; stroke-width: 5; stroke-linejoin: round; marker-end: url(#arrow-red-model-seir); }
+    </style>
+  </defs>
+  <rect width="100%" height="100%" fill="#fff"/>
+  <clipPath id="pool-clip-20"><rect x="20" y="175" width="220" height="120" rx="18"/></clipPath>
+  <rect x="20" y="175" width="220" height="120" rx="18" fill="#ecfeff"/>
+  <rect class="pool-fill" x="20" y="175" width="148" height="120" clip-path="url(#pool-clip-20)"/>
+  <rect class="pool-frame" x="20" y="175" width="220" height="120" rx="18"/>
+  <text class="compartment-label" x="130" y="258">S</text>
+  <text class="compartment-name" x="130" y="338">Susceptible pool</text>
+  <circle class="teal-compartment" cx="428" cy="233" r="72"/>
+  <text class="compartment-label" x="428" y="256">E</text>
+  <text class="compartment-name" x="428" y="335">Exposed</text>
+  <circle class="blue-compartment" cx="668" cy="233" r="72"/>
+  <text class="compartment-label" x="668" y="256">I</text>
+  <text class="compartment-name" x="668" y="335">Infectious</text>
+  <path class="teal-line" d="M 240,207 L 300,143"/>
+  <path class="blue-line" d="M 628,166 C 600,60 360,70 300,143"/>
+  <path class="teal-arrow" d="M 300,143 C 284,192 300,214 330,220"/>
+  <circle class="decision-point" cx="300" cy="143" r="11"/>
+  <text class="rate-label" x="472" y="66">λ</text>
+  <path class="blue-arrow" d="M 512,233 L 574,233"/>
+  <text class="rate-label" x="545" y="205">1/T<tspan font-size="24" dy="6">E</tspan></text>
+  <path class="sampled-arrow" d="M 740,206 L 961,120"/>
+  <text class="rate-label" x="853" y="124">μs</text>
+  <path class="unsampled-arrow" d="M 740,262 L 967,348"/>
+  <text class="rate-label" x="850" y="370">μ(1-s)</text>
+  <circle class="s-compartment" cx="1058" cy="85" r="72"/>
+  <text class="compartment-label" x="1058" y="108">O</text>
+  <text class="compartment-name" x="1058" y="187">Observed</text>
+  <circle class="u-compartment" cx="1058" cy="388" r="72"/>
+  <text class="compartment-label" x="1058" y="411">R</text>
+  <text class="compartment-name" x="1058" y="490">Recovered</text>
+</svg>

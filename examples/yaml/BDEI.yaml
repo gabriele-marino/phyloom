@@ -1,0 +1,139 @@
+# Birth-death with exposed and infectious stages (BDEI)
+#
+# Newly infected lineages start exposed (state `E`): they neither transmit nor
+# are removed, and become infectious (state `I`) at rate ε. Infectious lineages
+# transmit at rate λ, creating new `E` lineages, and are removed at rate μ; each
+# removal is sampled with probability p.
+#
+# Run it from the repository root with `phyloom examples/yaml/BDEI.yaml`.
+# `examples/python/BDEI.py` builds the same model with the Python API.
+
+# ------------------------------------------------------------------------------
+# Dataset settings
+# ------------------------------------------------------------------------------
+
+# Directory where the dataset is written, relative to the directory phyloom is
+# run from. Splits that already exist there are skipped, not overwritten.
+output_dir: outputs/BDEI-yaml
+
+# Number of accepted samples in each split. Each split gets a folder in
+# `output_dir`, with one `data/<sample-id>/` folder per sample and a `metadata.csv`
+# with one row per sample (context values, rejections, run time, and logs).
+n_samples: {train: 100, val: 10, test: 10}
+
+# Number of parallel worker processes; `-1` uses all CPU cores.
+n_jobs: -1
+
+# Master random seed: rerunning with the same seed gives the same dataset.
+seed: 42
+
+# ------------------------------------------------------------------------------
+# Context
+# ------------------------------------------------------------------------------
+
+# Parameters of one sample, drawn anew for every sample and saved in
+# `metadata.csv`. Entries are evaluated top to bottom; each is a constant, a
+# Python expression of earlier entries (NumPy is available as `np`), or a random
+# draw `{type: <method>, ...}` that calls NumPy's `Generator.<method>` with the
+# given arguments.
+context:
+  # Reproduction number λ / μ. Every `E` lineage eventually becomes `I`, so this
+  # is the expected number of offspring per lineage.
+  R_0: {type: lognormal, mean: 1.0, sigma: 0.2}
+
+  # Rather than the two stage rates, draw the mean total duration `T` of an
+  # infection and the fraction `f` of it spent exposed. Each gets its own prior,
+  # and `T_E + T_I = T` holds by construction.
+  T: {type: lognormal, mean: 1.0, sigma: 0.3}
+  f: {type: uniform, low: 0.05, high: 0.75}
+  T_I: (1 - f) * T
+  T_E: f * T
+
+  # Progression rate ε and removal rate μ: the reciprocals of the mean stage
+  # durations.
+  epsilon: 1 / T_E
+  mu: 1 / T_I
+
+  # Sampling probability p of a removal.
+  p: {type: uniform, low: 0.05, high: 0.75}
+
+  # Birth rate λ = R_0 μ, and rates of sampled (ψ = μp) and unsampled
+  # (μ(1 - p)) removals.
+  la: R_0 * mu
+  psi: mu * p
+  death_rate: mu - psi
+
+  # State of the first lineage: `E` with probability 0.8, `I` with probability 0.2.
+  # Distribution arguments are Python expressions, hence the quoted lists.
+  init_state: {type: choice, a: "['E', 'I']", p: "[0.8, 0.2]"}
+
+  # Number of sampled tips per tree (`integers` excludes `high`: 50 to 250).
+  n_leaves: {type: integers, low: 50, high: 251}
+
+# ------------------------------------------------------------------------------
+# Model
+# ------------------------------------------------------------------------------
+
+# The process simulated in each trial. Each event pairs a rule (what happens)
+# with a hazard (its rate per opportunity, e.g. per eligible lineage or pair).
+# Rule and hazard parameters can be expressions of the context entries.
+model:
+  # Birth-death-sampling-hybridization: forward in time, each active lineage
+  # has a state.
+  spec: bdsh
+  # State names are plain strings, not expressions: `"{init_state}"` inserts
+  # the value of the `init_state` context entry.
+  init_state: "{init_state}"
+
+  events:
+    # Transmission. `parent_state: I` keeps exposed lineages from transmitting.
+    # `child_states` specifies the states of the two new lineages: the parent
+    # continues as `I` and the new lineage starts as `E`.
+    - rule: {spec: birth, parent_state: I, child_states: [I, E]}
+      hazard: {spec: constant, rate: la}
+
+    # Stage progression from `E` to `I` at rate ε. A migration replaces a lineage
+    # with one in a new state: here, the move is between disease stages.
+    - rule: {spec: migration, source_state: E, target_state: I}
+      hazard: {spec: constant, rate: epsilon}
+
+    # Removal at total rate μ is split into two competing events, unsampled
+    # death at rate μ(1 - p) and sampling at rate μp, so that a removal is
+    # sampled with probability p. `state: I` prevents removals during
+    # incubation, and `removal: true` ends the sampled lineage.
+    - rule: {spec: death, state: I}
+      hazard: {spec: constant, rate: death_rate}
+    - rule: {spec: sampling, state: I, removal: true}
+      hazard: {spec: constant, rate: psi}
+
+# ------------------------------------------------------------------------------
+# Trials
+# ------------------------------------------------------------------------------
+
+# Python expression checked after every step: the trial ends as soon as it is
+# true. Here, it ends once `n_leaves` tips are sampled, which fixes the tree size.
+stop_criterion: model.count_sampled_lineages() == n_leaves
+
+# Python expression checked when the trial ends: if false, the trial is
+# rejected and rerun with the same context. Here, it requires an active
+# lineage, rejecting epidemics that died out before `n_leaves` samples.
+acceptance_criterion: model.count_current_lineages() > 0
+
+# ------------------------------------------------------------------------------
+# Outputs
+# ------------------------------------------------------------------------------
+
+# Extra `metadata.csv` columns: Python expressions evaluated on each accepted
+# trial. Here, the number of lineages still in each stage, i.e. the unobserved
+# epidemic behind the tree.
+logs:
+  still_incubating: model.count_current_lineages("E")
+  still_infectious: model.count_current_lineages("I")
+
+# Python statements run on each accepted trial; `output_dir` is the sample's own
+# folder (e.g. `outputs/BDEI-yaml/train/data/1`). `model.history()` is the full
+# history, and `model.history(model.get_sampled_lineages())` keeps only the ancestry
+# of the sampled lineages; `dump()` writes it in Newick format. Here, only the
+# sampled tree is written.
+output_hooks:
+  - model.history(model.get_sampled_lineages()).dump(output_dir / "sampled.nwk")

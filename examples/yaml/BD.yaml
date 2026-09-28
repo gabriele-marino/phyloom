@@ -1,0 +1,138 @@
+# Birth-death (BD) with a sampling intervention
+#
+# Infectious lineages (state `I`) branch at rate λ and are removed at rate μ; each
+# removal is sampled with probability p. Sampling effort increases at a random
+# intervention time, as when testing is scaled up during an outbreak.
+#
+# Run it from the repository root with `phyloom examples/yaml/BD.yaml`.
+# `examples/python/BD.py` builds the same model with the Python API.
+
+# ------------------------------------------------------------------------------
+# Dataset settings
+# ------------------------------------------------------------------------------
+
+# Directory where the dataset is written, relative to the directory phyloom is
+# run from. Splits that already exist there are skipped, not overwritten.
+output_dir: outputs/BD-yaml
+
+# Number of accepted samples in each split. Each split gets a folder in
+# `output_dir`, with one `data/<sample-id>/` folder per sample and a `metadata.csv`
+# with one row per sample (context values, rejections, run time, and logs).
+n_samples: {train: 100, val: 10, test: 10}
+
+# Number of parallel worker processes; `-1` uses all CPU cores.
+n_jobs: -1
+
+# Master random seed: rerunning with the same seed gives the same dataset.
+seed: 42
+
+# ------------------------------------------------------------------------------
+# Context
+# ------------------------------------------------------------------------------
+
+# Parameters of one sample, drawn anew for every sample and saved in
+# `metadata.csv`. Entries are evaluated top to bottom; each is a constant, a
+# Python expression of earlier entries (NumPy is available as `np`), or a random
+# draw `{type: <method>, ...}` that calls NumPy's `Generator.<method>` with the
+# given arguments.
+context:
+  # Reproduction number λ / μ: the expected number of offspring per lineage.
+  R_0: {type: lognormal, mean: 1.0, sigma: 0.2}
+
+  # Removal rate μ: 1 / μ is the mean time a lineage stays active.
+  mu: {type: uniform, low: 0.25, high: 0.6}
+
+  # Sampling probability p before and after the intervention. The lower bound
+  # of `p_after` uses `p_before`, so sampling at least doubles in every sample.
+  p_before: {type: uniform, low: 0.05, high: 0.15}
+  p_after: {type: uniform, low: 2 * p_before, high: 0.5}
+
+  # Birth rate λ = R_0 μ.
+  la: R_0 * mu
+
+  # Rates of sampled (ψ = μp) and unsampled (μ(1 - p)) removals, with one value
+  # per skyline interval: [before, after] the intervention. `np.array` makes the
+  # arithmetic elementwise.
+  psi: mu * np.array([p_before, p_after])
+  death_rate: mu - psi
+
+  # Time at which the sampling probability changes.
+  intervention_time: {type: uniform, low: 4, high: 6}
+
+  # Number of sampled tips per tree (`integers` excludes `high`: 20 to 40).
+  n_leaves: {type: integers, low: 20, high: 41}
+
+# ------------------------------------------------------------------------------
+# Model
+# ------------------------------------------------------------------------------
+
+# The process simulated in each trial. Each event pairs a rule (what happens)
+# with a hazard (its rate per opportunity, e.g. per eligible lineage or pair).
+# Rule and hazard parameters can be expressions of the context entries.
+model:
+  # Birth-death-sampling-hybridization: forward in time, each active lineage
+  # has a state.
+  spec: bdsh
+  init_state: I
+
+  events:
+    # Birth: an `I` lineage splits into two `I` lineages.
+    - rule: {spec: birth}
+      hazard: {spec: constant, rate: la}
+
+    # Removal at total rate μ is split into two competing events, unsampled
+    # death at rate μ(1 - p) and sampling at rate μp, so that a removal is
+    # sampled with probability p. `removal: true` ends the sampled lineage, as
+    # when a person is isolated after a positive test.
+    #
+    # Skyline hazards are piecewise constant: one rate per interval, switching
+    # at `break_times` (one fewer than the rates). Both rates switch together and
+    # always sum to μ, so the intervention changes which removals are observed,
+    # not the epidemic dynamics.
+    - rule: {spec: death}
+      hazard: {spec: skyline, rates: death_rate, break_times: [intervention_time]}
+    - rule: {spec: sampling, removal: true}
+      hazard: {spec: skyline, rates: psi, break_times: [intervention_time]}
+
+# ------------------------------------------------------------------------------
+# Trials
+# ------------------------------------------------------------------------------
+
+# Python expression checked after every step: the trial ends as soon as it is
+# true. Here, it ends once `n_leaves` tips are sampled, which fixes the tree size.
+stop_criterion: model.count_sampled_lineages() == n_leaves
+
+# Python expression checked when the trial ends: if false, the trial is
+# rejected and rerun with the same context. Here, it requires:
+# 1. an active lineage, rejecting epidemics that died out before `n_leaves`
+#    samples (the dataset is conditioned on epidemics that survive sampling).
+# 2. a sample before the intervention, so that the tree informs `p_before`.
+acceptance_criterion: (
+    model.count_current_lineages() > 0
+    and any(
+      l
+      for l in model.get_sampled_lineages()
+      if model.time_of(l) < intervention_time
+    )
+  )
+
+# ------------------------------------------------------------------------------
+# Outputs
+# ------------------------------------------------------------------------------
+
+# Extra `metadata.csv` columns: Python expressions evaluated on each accepted
+# trial. Here, the number of tips sampled before the intervention.
+logs:
+  n_sampled_before_intervention: sum(
+      1
+      for l in model.get_sampled_lineages()
+      if model.time_of(l) < intervention_time
+    )
+
+# Python statements run on each accepted trial; `output_dir` is the sample's own
+# folder (e.g. `outputs/BD-yaml/train/data/1`). `model.history()` is the full
+# history, and `model.history(model.get_sampled_lineages())` keeps only the ancestry
+# of the sampled lineages; `dump()` writes it in Newick format.
+output_hooks:
+  - model.history().dump(output_dir / "history.nwk")
+  - model.history(model.get_sampled_lineages()).dump(output_dir / "sampled.nwk")

@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="1345.4352"
+   height="862.62555"
+   viewBox="0 0 1345.4351 862.62556"
+   role="img"
+   aria-labelledby="title desc"
+   version="1.1"
+   id="svg40"
+   sodipodi:docname="history.svg"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview40"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="0.62868849"
+     inkscape:cx="1011.6298"
+     inkscape:cy="660.89965"
+     inkscape:window-width="1512"
+     inkscape:window-height="844"
+     inkscape:window-x="0"
+     inkscape:window-y="33"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg40" />
+  <title
+     id="title">Hidden history and observed network</title>
+  <desc
+     id="desc">A timed BDSH history from origin time zero, with sampled tips, X-marked unobserved terminations, and a hybridization. The observed network below retains only sampled lineages while preserving event times and the hybridization ancestral to sampled tips.</desc>
+  <defs
+     id="defs1">
+    <style
+       id="style1">
+      .bg { fill: #fff; }
+      .panel-title { font: 600 28px system-ui, -apple-system, Segoe UI, sans-serif; fill: #334155; }
+      .small { font: 400 17px system-ui, -apple-system, Segoe UI, sans-serif; fill: #475569; }
+      .branch { fill: none; stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+      .root-branch { fill: none; stroke: #334155; stroke-width: 8; stroke-linecap: round; }
+      .purple { stroke: #7c3aed; }
+      .green { stroke: #16a34a; }
+      .hybrid { stroke: #db2777; }
+      .node { fill: #fff; stroke: #334155; stroke-width: 3.5; }
+      .retic-node { fill: #fff; stroke: #db2777; stroke-width: 4; }
+      .sample { stroke: #fff; stroke-width: 3; }
+      .sample-purple { fill: #7c3aed; }
+      .sample-green { fill: #16a34a; }
+      .sample-hybrid { fill: #db2777; }
+      .unobserved { fill: none; stroke: #dc2626; stroke-width: 3; stroke-linecap: round; }
+      .time-guide { stroke: #e2e8f0; stroke-width: 2; stroke-dasharray: 5 10; }
+      .axis { stroke: #94a3b8; stroke-width: 3; }
+      .tick { stroke: #94a3b8; stroke-width: 3; }
+      .axis-arrow { fill: #94a3b8; }
+    </style>
+  </defs>
+  <!-- Shared time coordinates: x = 70 + 150t, with the process origin at t=0. -->
+  <text
+     class="panel-title"
+     x="30.187742"
+     y="53.585236"
+     id="text5"
+     style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:28px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Hidden history</text>
+  <g
+     aria-label="Legend"
+     class="small"
+     id="legend"
+     transform="translate(-95.812257,-1.3089986)"
+     style="font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">
+    <circle
+       class="sample sample-purple"
+       cx="1205"
+       cy="36"
+       r="8"
+       id="circle1" />
+    <text
+       x="1227"
+       y="41"
+       id="text1">Sampled tip</text>
+    <path
+       class="unobserved"
+       d="m 1199,60 12,12 m 0,-12 -12,12"
+       id="path1" />
+    <text
+       x="1227"
+       y="71"
+       id="text2">Unobserved termination</text>
+    <circle
+       class="node"
+       cx="1205"
+       cy="96"
+       r="8"
+       id="circle3" />
+    <text
+       x="1227"
+       y="101"
+       id="text3">Internal node</text>
+    <rect
+       class="retic-node"
+       x="1199"
+       y="120"
+       width="12"
+       height="12"
+       rx="1"
+       transform="rotate(45,1205,126)"
+       id="rect3" />
+    <text
+       x="1227"
+       y="131"
+       id="text4">Hybridization</text>
+  </g>
+  <!-- Full BDSH history. Nodes are placed at the times their lineages end. -->
+  <path
+     class="root-branch"
+     d="M 38.187743,239.58521 H 188.18774"
+     id="path8" />
+  <path
+     class="branch purple"
+     d="m 188.18774,239.58521 c 80,-60 136.47926,-92.48502 216.47926,-132.48502 m 9.51698,4.58462 c 16.16111,47.15024 32.94431,61.54383 63.47022,81.89943 m -55.8461,-89.3243 h 207.14884 m 15.62135,5.68049 c 41.41605,72.54384 92.63494,82.9286 133.36982,81.14512 M 645.28835,102.83982 C 722.85746,58.296341 863.28329,38.986065 1009.2896,47.776621"
+     id="path9"
+     sodipodi:nodetypes="cccccccccc" />
+  <path
+     class="branch green"
+     d="m 188.18774,239.58521 c 85,65 150.7692,81.09447 245.7692,136.09447 m 15.62612,-3.29852 c 45.52941,-58.78801 61.93363,-64.79591 103.56786,-71.48824 m -100.73238,78.33707 205.82834,0.71006 m 19.17166,-3.55031 c 33.21101,-40.40712 53.84872,-62.90449 103.14775,-75.1608 m -101.01757,81.55135 c 117.61404,18.57893 252.64034,31.32757 406.81568,21.87153"
+     id="path10"
+     sodipodi:nodetypes="cccccccccc" />
+  <path
+     class="branch purple"
+     d="m 793.69242,189.6672 c 90.37004,-0.78961 103.57571,31.57943 144.49532,49.91801"
+     id="path11"
+     sodipodi:nodetypes="cc" />
+  <path
+     class="branch green"
+     d="m 797.48703,299.03297 c 64.50312,-1.16912 88.22976,-18.07337 140.70071,-59.44776"
+     id="path12"
+     sodipodi:nodetypes="cc" />
+  <path
+     class="branch hybrid"
+     d="m 938.18774,239.58521 c 84.99996,-20 154.99996,-40 299.99996,-45 m -299.99996,45 c 84.99996,20 149.99996,45 224.99996,55"
+     id="path13" />
+  <circle
+     class="node"
+     cx="188.18774"
+     cy="239.58519"
+     r="10"
+     id="circle13" />
+  <circle
+     class="node"
+     cx="413.18774"
+     cy="105.58523"
+     r="9"
+     id="circle14" />
+  <circle
+     class="node"
+     cx="443.18774"
+     cy="379.58524"
+     r="9"
+     id="circle15" />
+  <circle
+     class="node"
+     cx="638.18774"
+     cy="105.58523"
+     r="9"
+     id="circle16" />
+  <circle
+     class="node"
+     cx="668.18774"
+     cy="379.58524"
+     r="9"
+     id="circle17" />
+  <circle
+     class="node"
+     cx="788.18774"
+     cy="188.58519"
+     r="8"
+     id="circle18" />
+  <circle
+     class="node"
+     cx="788.18774"
+     cy="299.58524"
+     r="8"
+     id="circle19" />
+  <rect
+     class="retic-node"
+     x="822.80975"
+     y="-503.98703"
+     width="20"
+     height="20"
+     rx="2"
+     transform="rotate(45)"
+     id="rect19" />
+  <!-- Filled circles are sampled tips; X marks are unobserved terminations. -->
+  <circle
+     class="sample sample-purple"
+     cx="1013.1877"
+     cy="47.585236"
+     r="11"
+     id="circle20" />
+  <circle
+     class="sample sample-green"
+     cx="1088.1877"
+     cy="404.58527"
+     r="11"
+     id="circle21" />
+  <circle
+     class="sample sample-hybrid"
+     cx="1163.1877"
+     cy="294.58524"
+     r="11"
+     id="circle22" />
+  <circle
+     class="sample sample-hybrid"
+     cx="1238.1877"
+     cy="194.58519"
+     r="11"
+     id="circle23" />
+  <path
+     class="unobserved"
+     d="m 480.18774,187.58519 16,16 m 0,-16 -16,16"
+     id="path14" />
+  <path
+     class="unobserved"
+     d="m 555.18774,293.58527 16,16 m 0,-16 -16,16"
+     id="path15" />
+  <g
+     transform="translate(-31.812257,-409.41479)"
+     id="g40">
+    <text
+       class="panel-title"
+       x="62"
+       y="856"
+       id="text25"
+       style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:28px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Observed network</text>
+    <!-- Sampled BDSH history. Its nodes share the full history's time coordinates. -->
+    <path
+       class="root-branch"
+       d="M 70,985 H 220"
+       id="path25" />
+    <path
+       class="branch purple"
+       d="m 220,985 c 145,-50 290,-85 450,-85 m 0,0 c 140,10 233.28729,1.47098 368.2873,11.47098 M 670,900 c 110,20 205,55 300,80"
+       id="path26"
+       sodipodi:nodetypes="cccccc" />
+    <path
+       class="branch green"
+       d="m 220,985 c 150,35 310,65 480,65 m 0,0 c 145,10 270,25 420,30 m -420,-30 c 105,-20 200,-50 270,-70"
+       id="path27" />
+    <path
+       class="branch hybrid"
+       d="m 970,980 c 110,-15 205,-40 300,-55 m -300,55 c 80,20 155,40 225,55"
+       id="path28" />
+    <circle
+       class="node"
+       cx="220"
+       cy="985"
+       r="10"
+       id="circle28" />
+    <circle
+       class="node"
+       cx="670"
+       cy="900"
+       r="9"
+       id="circle29" />
+    <circle
+       class="node"
+       cx="700"
+       cy="1050"
+       r="9"
+       id="circle30" />
+    <rect
+       class="retic-node"
+       x="960"
+       y="970"
+       width="20"
+       height="20"
+       rx="2"
+       transform="rotate(45,970,980)"
+       id="rect30" />
+    <circle
+       class="sample sample-purple"
+       cx="1045"
+       cy="912"
+       r="11"
+       id="circle31" />
+    <circle
+       class="sample sample-green"
+       cx="1120"
+       cy="1080"
+       r="11"
+       id="circle32" />
+    <circle
+       class="sample sample-hybrid"
+       cx="1195"
+       cy="1035"
+       r="11"
+       id="circle33" />
+    <circle
+       class="sample sample-hybrid"
+       cx="1270"
+       cy="925"
+       r="11"
+       id="circle34" />
+    <!-- One shared timeline for both panels. -->
+    <line
+       class="axis"
+       x1="70"
+       y1="1145"
+       x2="1320"
+       y2="1145"
+       id="line34" />
+    <path
+       class="axis-arrow"
+       d="m 1340,1145 -22,-11 v 22 z"
+       id="path34" />
+    <g
+       class="small"
+       text-anchor="middle"
+       id="g39"
+       style="font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">
+      <line
+         class="tick"
+         x1="70"
+         y1="1133"
+         x2="70"
+         y2="1157"
+         id="line35" />
+      <text
+         x="70"
+         y="1187"
+         id="text35">t=0</text>
+      <line
+         class="tick"
+         x1="370"
+         y1="1133"
+         x2="370"
+         y2="1157"
+         id="line36" />
+      <text
+         x="370"
+         y="1187"
+         id="text36">t=2</text>
+      <line
+         class="tick"
+         x1="670"
+         y1="1133"
+         x2="670"
+         y2="1157"
+         id="line37" />
+      <text
+         x="670"
+         y="1187"
+         id="text37">t=4</text>
+      <line
+         class="tick"
+         x1="970"
+         y1="1133"
+         x2="970"
+         y2="1157"
+         id="line38" />
+      <text
+         x="970"
+         y="1187"
+         id="text38">t=6</text>
+      <line
+         class="tick"
+         x1="1270"
+         y1="1133"
+         x2="1270"
+         y2="1157"
+         id="line39" />
+      <text
+         x="1270"
+         y="1187"
+         id="text39">t=8</text>
+    </g>
+    <text
+       class="small"
+       x="695"
+       y="1222"
+       text-anchor="middle"
+       id="text40"
+       style="font-style:normal;font-variant:normal;font-weight:400;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Time since process origin</text>
+  </g>
+</svg>

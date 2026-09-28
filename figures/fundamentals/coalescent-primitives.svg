@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="1426.4376"
+   height="682.44116"
+   viewBox="0 0 1426.4377 682.44116"
+   role="img"
+   aria-labelledby="title desc"
+   version="1.1"
+   id="svg21"
+   sodipodi:docname="coalescent-primitives.svg"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview21"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="0.77250352"
+     inkscape:cx="1005.1734"
+     inkscape:cy="377.34456"
+     inkscape:window-width="1280"
+     inkscape:window-height="778"
+     inkscape:window-x="91"
+     inkscape:window-y="33"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="spawn" />
+  <title
+     id="title">Coalescent event primitives</title>
+  <desc
+     id="desc">Three single-row event cards show coalescence, spawn, and retrace. Spawn adds a new active lineage at a scheduled time; the new lineage is highlighted while unaffected lineages remain faint in the background. Present-day lineages are on the left and older ancestors are on the right.</desc>
+  <defs
+     id="defs1">
+    <style
+       id="style1">
+      .card { fill: #f8fafc; stroke: #dbe4ee; stroke-width: 2; }
+      .heading { font: 700 28px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #0f172a; }
+      .text { font: 500 16px system-ui, -apple-system, Segoe UI, sans-serif; fill: #475569; }
+      .edge { fill: none; stroke: #0f766e; stroke-width: 8; stroke-linecap: round; stroke-linejoin: round; }
+      .active { fill: #fff; stroke: #0f172a; stroke-width: 4; stroke-dasharray: 2 8; stroke-linecap: round; }
+      .inactive { fill: #fff; stroke: #0f172a; stroke-width: 4; }
+      .letter { font: 700 18px system-ui, -apple-system, Segoe UI, sans-serif; fill: #0f172a; text-anchor: middle; dominant-baseline: central; }
+      .context-lineage { fill: none; stroke: #cbd5e1; stroke-width: 4; stroke-dasharray: 2 8; stroke-linecap: round; opacity: .45; }
+      .context-node { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 3; stroke-dasharray: 2 7; opacity: .5; }
+      .spawn-guide { stroke: #f59e0b; stroke-width: 3; stroke-dasharray: 7 8; opacity: .7; }
+      .spawn-edge { fill: none; stroke: #0f766e; stroke-width: 9; stroke-linecap: round; }
+      .spawn-active { fill: #fff; stroke: #0f766e; stroke-width: 5; stroke-dasharray: 2 8; stroke-linecap: round; }
+      .spawn-origin { fill: #0f766e; stroke: #fff; stroke-width: 3; }
+      .spawn-label { font: 600 16px system-ui, -apple-system, Segoe UI, sans-serif; fill: #0f766e; text-anchor: middle; }
+      .spawn-time { font: 600 15px system-ui, -apple-system, Segoe UI, sans-serif; fill: #b45309; text-anchor: middle; }
+      .time-arrow { stroke: #94a3b8; stroke-width: 5; stroke-linecap: round; marker-end: url(#arrow); }
+      .time-label { font: 600 16px system-ui, -apple-system, Segoe UI, sans-serif; fill: #64748b; }
+    </style>
+    <marker
+       id="arrow"
+       markerWidth="14"
+       markerHeight="14"
+       refX="11"
+       refY="7"
+       orient="auto"
+       markerUnits="userSpaceOnUse">
+      <path
+         d="M 0,0 14,7 0,14 Z"
+         fill="#94a3b8"
+         id="path1" />
+    </marker>
+  </defs>
+  <g
+     id="coalesce">
+    <rect
+       class="card"
+       x="14"
+       y="22"
+       width="442"
+       height="470"
+       rx="20"
+       id="rect1" />
+    <text
+       class="heading"
+       x="42"
+       y="68"
+       id="text1">Coalesce</text>
+    <text
+       class="text"
+       x="42"
+       y="100"
+       id="text2">Two lineages join to form an older ancestor.</text>
+    <path
+       class="edge"
+       d="M 377,307 C 300,292 220,265 101,265"
+       id="path2" />
+    <path
+       class="edge"
+       d="M 377,329 C 300,344 220,370 101,370"
+       id="path3" />
+    <circle
+       class="inactive"
+       cx="74"
+       cy="265"
+       r="27"
+       id="circle3" />
+    <text
+       class="letter"
+       x="74"
+       y="265"
+       id="text3">A</text>
+    <circle
+       class="inactive"
+       cx="74"
+       cy="370"
+       r="27"
+       id="circle4" />
+    <text
+       class="letter"
+       x="74"
+       y="370"
+       id="text4">B</text>
+    <circle
+       class="active"
+       cx="406"
+       cy="318"
+       r="29"
+       id="circle5" />
+    <text
+       class="letter"
+       x="406"
+       y="318"
+       id="text5">A</text>
+  </g>
+  <g
+     id="spawn">
+    <rect
+       class="card"
+       x="492"
+       y="22"
+       width="442"
+       height="470"
+       rx="20"
+       id="rect5" />
+    <text
+       class="heading"
+       x="520"
+       y="68"
+       id="text6">Spawn</text>
+    <text
+       class="text"
+       x="520"
+       y="100"
+       id="text7">A scheduled sample adds a new active lineage.</text>
+    <!-- Unaffected lineages sit quietly behind the new lineage. -->
+    <path
+       class="context-lineage"
+       d="M 533,250 H 901"
+       id="path7" />
+    <circle
+       class="context-node"
+       cx="520"
+       cy="250"
+       r="13"
+       id="circle7" />
+    <path
+       class="context-lineage"
+       d="M 533,390 H 901"
+       id="path8" />
+    <circle
+       class="context-node"
+       cx="520"
+       cy="390"
+       r="13"
+       id="circle9" />
+    <circle
+       class="context-node"
+       cx="914"
+       cy="390"
+       r="13"
+       id="circle10" />
+    <line
+       class="spawn-guide"
+       x1="557.84937"
+       y1="220"
+       x2="557.84937"
+       y2="416"
+       id="line10"
+       style="fill:#ff9955;stroke:#fdb381;stroke-opacity:1" />
+    <text
+       class="spawn-time"
+       x="557.84937"
+       y="209.77075"
+       id="text10"
+       style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:15px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif;fill:#ff9955">Spawn time</text>
+    <path
+       class="spawn-edge"
+       d="M 583,320 H 858"
+       id="path10" />
+    <circle
+       class="spawn-active"
+       cx="556"
+       cy="320"
+       r="27"
+       id="circle11" />
+    <text
+       class="letter"
+       x="556"
+       y="320"
+       id="text11">A</text>
+    <circle
+       class="spawn-origin"
+       cx="870"
+       cy="320"
+       r="12"
+       id="circle12" />
+  </g>
+  <g
+     id="retrace">
+    <rect
+       class="card"
+       x="970"
+       y="22"
+       width="442"
+       height="470"
+       rx="20"
+       id="rect12" />
+    <text
+       class="heading"
+       x="998"
+       y="68"
+       id="text13">Retrace</text>
+    <text
+       class="text"
+       x="998"
+       y="100"
+       id="text14">One lineage continues in a new ancestral state.</text>
+    <path
+       class="edge"
+       d="M 1342,320 H 1065"
+       id="path14" />
+    <circle
+       class="inactive"
+       cx="1038"
+       cy="320"
+       r="27"
+       id="circle14" />
+    <text
+       class="letter"
+       x="1038"
+       y="320"
+       id="text15">A</text>
+    <circle
+       class="active"
+       cx="1369"
+       cy="320"
+       r="29"
+       id="circle15" />
+    <text
+       class="letter"
+       x="1369"
+       y="320"
+       id="text16">B</text>
+  </g>
+  <text
+     class="time-label"
+     x="34.131977"
+     y="543.17896"
+     text-anchor="start"
+     id="text17">present / start</text>
+  <text
+     class="time-label"
+     x="709.13196"
+     y="543.17896"
+     text-anchor="middle"
+     id="text18">backward simulation time</text>
+  <text
+     class="time-label"
+     x="1384.132"
+     y="543.17896"
+     text-anchor="end"
+     id="text19">older</text>
+  <line
+     class="time-arrow"
+     x1="54.131977"
+     y1="557.17896"
+     x2="1359.132"
+     y2="557.17896"
+     id="line19" />
+  <circle
+     class="active"
+     cx="376.42142"
+     cy="613.1745"
+     r="14"
+     id="circle19" />
+  <text
+     class="text"
+     x="402.42142"
+     y="619.1745"
+     id="text20">Active lineage after the event</text>
+  <circle
+     class="inactive"
+     cx="710.42145"
+     cy="613.1745"
+     r="14"
+     id="circle20" />
+  <text
+     class="text"
+     x="736.42145"
+     y="619.1745"
+     id="text21">Lineage no longer active after the event</text>
+</svg>

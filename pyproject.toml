@@ -1,0 +1,51 @@
+[project]
+name = "phyloom"
+version = "0.1.0"
+description = "Design and run stochastic phylogenetic tree and network simulators with minimal boilerplate"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "joblib==1.5.2",
+    "pandas==2.3.3",
+    "pydantic==2.12.3",
+    "pyyaml==6.0.3",
+    "scipy>=1.15.3",
+    "tqdm==4.67.1",
+]
+
+[dependency-groups]
+dev = [
+    "joblib-stubs==1.5.2.0.20250831",
+    "pandas-stubs==2.3.3.260113",
+    "pylint==4.0.6",
+    "pyright==1.1.414",
+    "pytest==8.4.2",
+    "ruff==0.16.0",
+    "scipy-stubs==1.15.3.0",
+]
+docs = [
+    "myst-parser==4.0.1",
+    "poethepoet==0.46.0",
+    "sphinx==8.1.3",
+    "sphinx-copybutton==0.5.2",
+    "sphinx-rtd-theme==3.1.0",
+]
+
+[tool.pyright]
+extraPaths = ["docs/_ext"]
+typeCheckingMode = "strict"
+
+[tool.poe.tasks]
+docs = "sphinx-build -b html docs docs/_build/html"
+
+[project.scripts]
+phyloom = "phyloom.main:main"
+
+[project.entry-points."phyloom.plugins"]
+bdsh = "phyloom.configs.bdsh"
+coalescent = "phyloom.configs.coalescent"
+epidemic = "phyloom.configs.epidemic"
+
+[build-system]
+requires = ["setuptools>=42"]
+build-backend = "setuptools.build_meta"

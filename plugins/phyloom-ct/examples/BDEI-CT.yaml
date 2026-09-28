@@ -1,0 +1,89 @@
+# Birth-death with exposed and infectious stages and contact tracing (BDEI-CT)
+#
+# A BDEI model with BDSH event rules replaced by their contact-tracing
+# counterparts. When an infectious individual is sampled, up to five of its
+# contacts (from most recent to least recent, so the infector comes last)
+# that are still infected are each notified with probability
+# `trace_probability`, and sampled at the same time.
+#
+# Run it from the project folder with `uv run phyloom examples/BDEI-CT.yaml`.
+
+output_dir: outputs/BDEI-CT
+n_samples: {train: 100, val: 10, test: 10}
+n_jobs: -1
+seed: 42
+
+context:
+  # `T` is the mean time spent infected and `f` the fraction of it spent
+  # exposed, so the progression rate is `epsilon = 1 / T_E` and the removal
+  # rate of infectious individuals is `mu = 1 / T_I`.
+  R_0: {type: lognormal, mean: 1.0, sigma: 0.2}
+  T: {type: lognormal, mean: 1.0, sigma: 0.3}
+  f: {type: uniform, low: 0.05, high: 0.75}
+  T_I: (1 - f) * T
+  T_E: f * T
+  epsilon: 1 / T_E
+  mu: 1 / T_I
+
+  # Removals happen at rate `mu`, split into sampling at rate `psi = p * mu`
+  # and unobserved removal at rate `mu - psi`. Without tracing, an individual
+  # transmits `R_0` times on average; tracing removes individuals earlier,
+  # which lowers that number.
+  p: {type: uniform, low: 0.05, high: 0.75}
+  lambda_rate: R_0 * mu
+  psi: mu * p
+  death_rate: mu - psi
+
+  # Initial state, `E` with probability 0.8 and `I` otherwise.
+  init_state: {type: choice, a: "['E', 'I']", p: "[0.8, 0.2]"}
+
+  # Number of sampled individuals at which a simulation stops.
+  n_leaves: {type: integers, low: 50, high: 250}
+
+  # Probability that each considered contact is notified.
+  trace_probability: {type: uniform, low: 0.5, high: 0.95}
+
+# The `ct` model of this plugin, with exposed (`E`) and infectious (`I`)
+# individuals. Each sampled individual considers at most its five most
+# recent contacts.
+model:
+  spec: ct
+  init_state: "{init_state}"
+  notification_probability: trace_probability
+  max_notifications: 5
+
+  events:
+    # Infectious individuals transmit: they stay `I` and infect a new `E`
+    # individual.
+    - rule: {spec: transmission, parent_state: I, child_state: E}
+      hazard: {spec: constant, rate: lambda_rate}
+
+    # Unobserved removal of infectious individuals, which traces no contacts.
+    - rule: {spec: recovery, state: I, sample: false}
+      hazard: {spec: constant, rate: death_rate}
+
+    # Exposed individuals become infectious.
+    - rule: {spec: migration, source_state: E, target_state: I}
+      hazard: {spec: constant, rate: epsilon}
+
+    # Sampled removal of infectious individuals, which traces their contacts.
+    - rule: {spec: recovery, state: I, sample: true}
+      hazard: {spec: constant, rate: psi}
+
+# Simulate until at least `n_leaves` individuals are sampled, and reject
+# extinct epidemics. Tracing can sample several individuals at once, so the
+# count can jump past `n_leaves`: with `==`, some simulations would not stop.
+stop_criterion: model.count_sampled_lineages() >= n_leaves
+acceptance_criterion: model.count_current_lineages() > 0
+
+# Number of individuals still exposed and infectious at the end of the
+# simulation, and number of sampled individuals.
+logs:
+  still_incubating: model.count_current_lineages("E")
+  still_infectious: model.count_current_lineages("I")
+  sampled_lineages: model.count_sampled_lineages()
+
+# Tree of the sampled individuals. Traced contacts are tips sampled at the same
+# time as their index case, possibly in state `E`.
+output_hooks:
+  - model.history(model.get_sampled_lineages()).dump(output_dir / "sampled.nwk")

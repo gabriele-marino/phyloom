@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title-model-bisse desc-model-bisse" width="1180" height="840" viewBox="0 0 1180 840">
+  <title id="title-model-bisse">Binary-state speciation and extinction (BiSSE) model</title>
+  <desc id="desc-model-bisse">Lineages in states A and B speciate at rates lambda A and lambda B, go extinct at rates mu A and mu B, and switch state at rate m in both directions. Lineages are sampled without removal at rate psi during the simulation and, at the final time T, with probabilities rho A and rho B.</desc>
+  <defs>
+    <marker id="arrow-teal-model-bisse" viewBox="0 0 24 24" refX="1" refY="12" markerWidth="24" markerHeight="24" markerUnits="userSpaceOnUse" overflow="visible" orient="auto">
+      <path d="M 1,3 23,12 1,21 Z" fill="#0891b2"/>
+    </marker>
+    <marker id="arrow-blue-model-bisse" viewBox="0 0 24 24" refX="1" refY="12" markerWidth="24" markerHeight="24" markerUnits="userSpaceOnUse" overflow="visible" orient="auto">
+      <path d="M 1,3 23,12 1,21 Z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-dark-model-bisse" viewBox="0 0 24 24" refX="1" refY="12" markerWidth="24" markerHeight="24" markerUnits="userSpaceOnUse" overflow="visible" orient="auto">
+      <path d="M 1,3 23,12 1,21 Z" fill="#0f172a"/>
+    </marker>
+    <marker id="arrow-red-model-bisse" viewBox="0 0 24 24" refX="1" refY="12" markerWidth="24" markerHeight="24" markerUnits="userSpaceOnUse" overflow="visible" orient="auto">
+      <path d="M 1,3 23,12 1,21 Z" fill="#dc2626"/>
+    </marker>
+    <marker id="arrow-gray-model-bisse" viewBox="0 0 24 24" refX="1" refY="12" markerWidth="24" markerHeight="24" markerUnits="userSpaceOnUse" overflow="visible" orient="auto">
+      <path d="M 1,3 23,12 1,21 Z" fill="#64748b"/>
+    </marker>
+    <style>
+      .compartment-label { font: 700 64px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #0f172a; text-anchor: middle; }
+      .compartment-name { font: 600 24px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #334155; text-anchor: middle; }
+      .rate-label { font: 700 34px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #0f172a; text-anchor: middle; }
+      .var-label { font: 700 28px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #0f172a; text-anchor: middle; }
+      .var-note { font: 600 20px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #475569; text-anchor: middle; }
+      .teal-compartment { fill: #ecfeff; stroke: #0891b2; stroke-width: 5; }
+      .blue-compartment { fill: #eff6ff; stroke: #2563eb; stroke-width: 5; }
+      .s-compartment { fill: #f8fafc; stroke: #64748b; stroke-width: 5; }
+      .u-compartment { fill: #fef2f2; stroke: #dc2626; stroke-width: 5; }
+      .pool-fill { fill: #a5dbe8; }
+      .pool-frame { fill: none; stroke: #0891b2; stroke-width: 5; }
+      .teal-line { fill: none; stroke: #0891b2; stroke-width: 5; }
+      .teal-arrow { fill: none; stroke: #0891b2; stroke-width: 5; stroke-linejoin: round; marker-end: url(#arrow-teal-model-bisse); }
+      .blue-line { fill: none; stroke: #2563eb; stroke-width: 5; }
+      .blue-arrow { fill: none; stroke: #2563eb; stroke-width: 5; stroke-linejoin: round; marker-end: url(#arrow-blue-model-bisse); }
+      .event-arrow { fill: none; stroke: #0f172a; stroke-width: 5; stroke-linejoin: round; marker-end: url(#arrow-dark-model-bisse); }
+      .scheduled-arrow { fill: none; stroke: #0f172a; stroke-width: 4; stroke-dasharray: 12 9; stroke-linejoin: round; marker-end: url(#arrow-dark-model-bisse); }
+      .decision-point { fill: #0f172a; stroke: #fff; stroke-width: 4; }
+      .sampled-arrow { fill: none; stroke: #64748b; stroke-width: 5; stroke-linejoin: round; marker-end: url(#arrow-gray-model-bisse); }
+      .unsampled-arrow { fill: none; stroke: #dc2626; stroke-width: 5; stroke-linejoin: round; marker-end: url(#arrow-red-model-bisse); }
+      .sampled-scheduled-arrow { fill: none; stroke: #64748b; stroke-width: 4; stroke-dasharray: 12 9; stroke-linejoin: round; marker-end: url(#arrow-gray-model-bisse); }
+    </style>
+  </defs>
+  <rect width="100%" height="100%" fill="#fff"/>
+  <g transform="translate(0,40)">
+  <circle class="teal-compartment" cx="220" cy="190" r="72"/>
+  <text class="compartment-label" x="220" y="213">A</text>
+  <text class="compartment-name" x="220" y="290">State A</text>
+  <circle class="blue-compartment" cx="220" cy="570" r="72"/>
+  <text class="compartment-label" x="220" y="593">B</text>
+  <text class="compartment-name" x="220" y="468">State B</text>
+  <path class="teal-arrow" d="M 250,122 C 262,30 110,20 105,95 C 102,125 118,145 134,158"/>
+  <text class="rate-label" x="90" y="44">λ<tspan font-size="24" dy="8">A</tspan></text>
+  <path class="blue-arrow" d="M 250,638 C 262,730 110,740 105,665 C 102,635 118,615 134,602"/>
+  <text class="rate-label" x="90" y="746">λ<tspan font-size="24" dy="8">B</tspan></text>
+  <path class="blue-arrow" d="M 194,316 L 194,420"/>
+  <path class="teal-arrow" d="M 246,444 L 246,340"/>
+  <text class="rate-label" x="154" y="390">m</text>
+  <text class="rate-label" x="286" y="390">m</text>
+  <path class="unsampled-arrow" d="M 290,223 L 532,339"/>
+  <text class="rate-label" x="380" y="324">μ<tspan font-size="24" dy="8">A</tspan></text>
+  <path class="unsampled-arrow" d="M 290,537 L 532,421"/>
+  <text class="rate-label" x="380" y="456">μ<tspan font-size="24" dy="8">B</tspan></text>
+  <path class="sampled-arrow" d="M 298,190 C 520,120 800,250 949,347"/>
+  <text class="rate-label" x="650" y="188">ψ</text>
+  <path class="sampled-arrow" d="M 298,570 C 520,640 800,510 949,413"/>
+  <text class="rate-label" x="650" y="596">ψ</text>
+  <path class="sampled-scheduled-arrow" d="M 287,151 C 500,-20 1250,0 1118,334"/>
+  <text class="rate-label" x="780" y="26">ρ<tspan font-size="24" dy="8">A</tspan><tspan dy="-8" font-size="24" font-weight="600" fill="#475569">&#160;(at time T)</tspan></text>
+  <path class="sampled-scheduled-arrow" d="M 287,609 C 500,780 1250,760 1118,426"/>
+  <text class="rate-label" x="780" y="778">ρ<tspan font-size="24" dy="8">B</tspan><tspan dy="-8" font-size="24" font-weight="600" fill="#475569">&#160;(at time T)</tspan></text>
+  <circle class="u-compartment" cx="620" cy="380" r="72"/>
+  <text class="compartment-label" x="620" y="403">E</text>
+  <text class="compartment-name" x="620" y="482">Extinct</text>
+  <circle class="s-compartment" cx="1040" cy="380" r="72"/>
+  <text class="compartment-label" x="1040" y="403">S</text>
+  <text class="compartment-name" x="1040" y="482">Sampled</text>
+  </g>
+</svg>

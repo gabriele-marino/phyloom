@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   role="img"
+   aria-labelledby="title-model-bdei desc-model-bdei"
+   width="970.96594"
+   height="535.1004"
+   viewBox="0 0 970.96592 535.1004"
+   version="1.1"
+   id="svg15"
+   sodipodi:docname="model-bdei.svg"
+   inkscape:version="1.4 (e7c3feb1, 2024-10-09)"
+   inkscape:export-filename="model-bdei.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview15"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="0.51379234"
+     inkscape:cx="521.61152"
+     inkscape:cy="422.34962"
+     inkscape:window-width="1472"
+     inkscape:window-height="925"
+     inkscape:window-x="0"
+     inkscape:window-y="30"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg15" />
+  <title
+     id="title-model-bdei">Birth-death exposed-infectious model</title>
+  <desc
+     id="desc-model-bdei">An exposed compartment E progresses to infectious I with rate epsilon. Infectious lineages create new exposed lineages with rate lambda. Removal from I with rate mu leads to a decision point, which splits diagonally into sampled S with probability p and unsampled U with probability one minus p.</desc>
+  <defs
+     id="defs3">
+    <marker
+       id="arrow-teal-bdei"
+       viewBox="0 0 24 24"
+       refX="1"
+       refY="12"
+       markerWidth="24"
+       markerHeight="24"
+       markerUnits="userSpaceOnUse"
+       overflow="visible"
+       orient="auto">
+      <path
+         d="M 1,3 23,12 1,21 Z"
+         fill="#0891b2"
+         id="path1" />
+    </marker>
+    <marker
+       id="arrow-blue-bdei"
+       viewBox="0 0 24 24"
+       refX="1"
+       refY="12"
+       markerWidth="24"
+       markerHeight="24"
+       markerUnits="userSpaceOnUse"
+       overflow="visible"
+       orient="auto">
+      <path
+         d="M 1,3 23,12 1,21 Z"
+         fill="#2563eb"
+         id="path2" />
+    </marker>
+    <marker
+       id="arrow-dark-bdei"
+       viewBox="0 0 24 24"
+       refX="1"
+       refY="12"
+       markerWidth="24"
+       markerHeight="24"
+       markerUnits="userSpaceOnUse"
+       overflow="visible"
+       orient="auto">
+      <path
+         d="M 1,3 23,12 1,21 Z"
+         fill="#0f172a"
+         id="path3" />
+    </marker>
+    <marker id="arrow-red-bdei" viewBox="0 0 24 24" refX="1" refY="12" markerWidth="24" markerHeight="24" markerUnits="userSpaceOnUse" overflow="visible" orient="auto">
+      <path d="M 1,3 23,12 1,21 Z" fill="#dc2626"/>
+    </marker>
+    <marker id="arrow-gray-bdei" viewBox="0 0 24 24" refX="1" refY="12" markerWidth="24" markerHeight="24" markerUnits="userSpaceOnUse" overflow="visible" orient="auto">
+      <path d="M 1,3 23,12 1,21 Z" fill="#64748b"/>
+    </marker>
+    <style
+       id="style3">
+      .bg { fill: #fff; }
+      .compartment-label { font: 700 64px system-ui, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif; fill: #0f172a; text-anchor: middle; }
+      .compartment-name { font: 600 24px system-ui, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif; fill: #334155; text-anchor: middle; }
+      .rate-label { font: 700 34px system-ui, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif; fill: #0f172a; text-anchor: middle; }
+      .prob-label { font: 700 30px system-ui, -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, sans-serif; fill: #0f172a; text-anchor: middle; }
+      .e-compartment { fill: #ecfeff; stroke: #0891b2; stroke-width: 5; }
+      .i-compartment { fill: #eff6ff; stroke: #2563eb; stroke-width: 5; }
+      .s-compartment { fill: #f8fafc; stroke: #64748b; stroke-width: 5; }
+      .u-compartment { fill: #fef2f2; stroke: #dc2626; stroke-width: 5; }
+      .birth-arrow { fill: none; stroke: #0891b2; stroke-width: 6; stroke-linecap: butt; stroke-linejoin: round; marker-end: url(#arrow-teal-bdei); }
+      .progression-arrow { fill: none; stroke: #2563eb; stroke-width: 5; stroke-linecap: butt; stroke-linejoin: round; marker-end: url(#arrow-blue-bdei); }
+      .event-arrow { fill: none; stroke: #0f172a; stroke-width: 5; stroke-linecap: butt; stroke-linejoin: round; marker-end: url(#arrow-dark-bdei); }
+      .decision-point { fill: #0f172a; stroke: #fff; stroke-width: 4; }
+      .sampled-arrow { fill: none; stroke: #64748b; stroke-width: 5; stroke-linejoin: round; marker-end: url(#arrow-gray-bdei); }
+      .unsampled-arrow { fill: none; stroke: #dc2626; stroke-width: 5; stroke-linejoin: round; marker-end: url(#arrow-red-bdei); }
+    </style>
+  </defs>
+  <rect id="background" width="100%" height="100%" fill="#fff" />
+  <g
+     id="exposed-state"
+     transform="translate(-93.422958,-108.99345)">
+    <circle
+       class="e-compartment"
+       cx="180"
+       cy="360"
+       r="72"
+       id="circle3" />
+    <text
+       class="compartment-label"
+       x="180"
+       y="383"
+       id="text3"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:64px;line-height:normal;font-family:system-ui, '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif">E</text>
+    <text
+       class="compartment-name"
+       x="180"
+       y="462"
+       id="text4"
+       style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:24px;line-height:normal;font-family:system-ui, '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif">Exposed</text>
+  </g>
+  <g
+     id="infectious-state"
+     transform="translate(-93.422958,-108.99345)">
+    <circle
+       class="i-compartment"
+       cx="420"
+       cy="360"
+       r="72"
+       id="circle4" />
+    <text
+       class="compartment-label"
+       x="420"
+       y="383"
+       id="text5"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:64px;line-height:normal;font-family:system-ui, '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif">I</text>
+    <text
+       class="compartment-name"
+       x="420"
+       y="462"
+       id="text6"
+       style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:24px;line-height:normal;font-family:system-ui, '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif">Infectious</text>
+  </g>
+  <path
+     class="birth-arrow"
+     d="M 286.37698,172.45276 C 239.10009,99.729659 191.73071,102.23734 133.08472,160.32983"
+     id="path6"
+     sodipodi:nodetypes="cc" />
+  <text
+     class="rate-label"
+     x="206.57704"
+     y="101.00655"
+     id="text7"
+     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:34px;line-height:normal;font-family:system-ui, '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif">λ</text>
+  <path
+     class="progression-arrow"
+     d="m 170.57704,251.00655 h 62"
+     id="path7" />
+  <text
+     class="rate-label"
+     x="201.57704"
+     y="223.00655"
+     id="text8"
+     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:34px;line-height:normal;font-family:system-ui, '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif">ε</text>
+  <path
+     class="event-arrow"
+     d="M 420.57704,251.00655 H 587.81398"
+     id="path8" />
+  <text
+     class="rate-label"
+     x="520.57703"
+     y="223.00655"
+     id="text9"
+     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:34px;line-height:normal;font-family:system-ui, '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif">μ</text>
+  <path
+     class="sampled-arrow"
+     d="m 622.57704,251.00655 c 61,-37 115,-74 168,-110"
+     id="path9" />
+  <text
+     class="prob-label"
+     x="702.57703"
+     y="174.00655"
+     id="text10"
+     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:30px;line-height:normal;font-family:system-ui, '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif">p</text>
+  <path
+     class="unsampled-arrow"
+     d="m 622.57704,251.00655 c 61,37 115,74 168,110"
+     id="path10" />
+  <text
+     class="prob-label"
+     x="692.57703"
+     y="346.00656"
+     id="text11"
+     style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:30px;line-height:normal;font-family:system-ui, '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif">1-p</text>
+  <circle
+     class="decision-point"
+     cx="622.57703"
+     cy="251.00655"
+     r="11"
+     id="circle11" />
+  <g
+     id="sampled-state"
+     transform="translate(-93.422958,-108.99345)">
+    <circle
+       class="s-compartment"
+       cx="968"
+       cy="196"
+       r="72"
+       id="circle12" />
+    <text
+       class="compartment-label"
+       x="968"
+       y="219"
+       id="text12"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:64px;line-height:normal;font-family:system-ui, '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif">S</text>
+    <text
+       class="compartment-name"
+       x="968"
+       y="296"
+       id="text13"
+       style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:24px;line-height:normal;font-family:system-ui, '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif">Sampled</text>
+  </g>
+  <g
+     id="unsampled-state"
+     transform="translate(-93.422958,-108.99345)">
+    <circle
+       class="u-compartment"
+       cx="968"
+       cy="524"
+       r="72"
+       id="circle13" />
+    <text
+       class="compartment-label"
+       x="968"
+       y="547"
+       id="text14"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:64px;line-height:normal;font-family:system-ui, '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif">U</text>
+    <text
+       class="compartment-name"
+       x="968"
+       y="624"
+       id="text15"
+       style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:24px;line-height:normal;font-family:system-ui, '-apple-system', BlinkMacSystemFont, 'Segoe UI', sans-serif">Unsampled</text>
+  </g>
+</svg>
