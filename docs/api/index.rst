@@ -1,4 +1,4 @@
-📖 Python API
+📚 Python API
 =============
 
 Use the Python API to build stochastic tree and network simulators,
