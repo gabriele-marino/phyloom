@@ -1,164 +1,51 @@
-# Birth-death with super-spreaders (BDSS)
-#
-# Infectious lineages are either ordinary (state `I_N`) or super-spreaders
-# (state `I_S`), and each class can transmit to either class, giving four birth
-# rates λ_NN, λ_NS, λ_SN, and λ_SS (parent class first, offspring class second).
-# Both classes are removed at rate μ, and each removal is sampled with
-# probability p.
-#
-# Run it from the repository root with `phyloom examples/yaml/BDSS.yaml`.
-# `examples/python/BDSS.py` builds the same model with the Python API.
-
-# ------------------------------------------------------------------------------
-# Dataset settings
-# ------------------------------------------------------------------------------
-
-# Directory where the dataset is written, relative to the directory phyloom is
-# run from. Splits that already exist there are skipped, not overwritten.
 output_dir: outputs/BDSS-yaml
-
-# Number of accepted samples in each split. Each split gets a folder in
-# `output_dir`, with one `data/<sample-id>/` folder per sample and a `metadata.csv`
-# with one row per sample (context values, rejections, run time, and logs).
 n_samples: {train: 100, val: 10, test: 10}
-
-# Number of parallel worker processes; `-1` uses all CPU cores.
 n_jobs: -1
-
-# Master random seed: rerunning with the same seed gives the same dataset.
 seed: 42
 
-# ------------------------------------------------------------------------------
-# Context
-# ------------------------------------------------------------------------------
-
-# Parameters of one sample, drawn anew for every sample and saved in
-# `metadata.csv`. Entries are evaluated top to bottom; each is a constant, a
-# Python expression of earlier entries (NumPy is available as `np`), or a random
-# draw `{type: <method>, ...}` that calls NumPy's `Generator.<method>` with the
-# given arguments.
 context:
-  # Reproduction number: the dominant eigenvalue of the offspring matrix below,
-  # i.e. the growth factor per generation once the class mix has stabilized.
   R_0: {type: lognormal, mean: 1.0, sigma: 0.2}
-
-  # Mean infectious period (fixed) and removal rate μ = 1 / T_I, shared by both
-  # classes.
   T_I: 2.5
   mu: 1 / T_I
-
-  # Sampling probability p of a removal (fixed), and rates of sampled (ψ = μp)
-  # and unsampled (μ(1 - p)) removals.
   p: 0.25
   psi: mu * p
   death_rate: mu - psi
-
-  # A super-spreader produces `r_SS` times as many offspring of each class as an
-  # ordinary lineage.
   r_SS: {type: uniform, low: 2, high: 10}
-
-  # Fraction of new infections that are super-spreaders.
   f_SS: {type: uniform, low: 0.1, high: 0.3}
-
-  # Expected offspring counts over a lineage's lifetime: `R_0_NS` is the number
-  # of `I_S` offspring of an `I_N` parent, `R_0_SN` the reverse, and `R_0_N` and
-  # `R_0_S` the same-class counts. They are derived so that the offspring matrix
-  # `[[R_0_N, R_0_SN], [R_0_NS, R_0_S]]` (rows: offspring class, columns: parent
-  # class) has dominant eigenvalue `R_0` with eigenvector `(1 - f_SS, f_SS)`.
-  # The `I_S` column is `r_SS` times the `I_N` column, so a fraction `f_SS` of
-  # new infections are `I_S` whatever the parent's class. All counts are
-  # positive for any `R_0 > 0`, `r_SS > 0`, and `0 < f_SS < 1`.
   R_0_NS: R_0 * f_SS / (1 + r_SS * f_SS - f_SS)
   R_0_SN: (R_0 - r_SS * R_0_NS) * r_SS
   R_0_S: r_SS * R_0_NS
   R_0_N: R_0_SN / r_SS
-
-  # Birth rates: a lineage is active for 1 / μ on average, so multiplying an
-  # expected offspring count by μ gives a per-lineage rate.
   lambda_NN: R_0_N * mu
   lambda_SS: R_0_S * mu
   lambda_NS: R_0_NS * mu
   lambda_SN: R_0_SN * mu
-
-  # State of the first lineage: `I_S` with probability `f_SS`, `I_N` otherwise.
-  # Distribution arguments are Python expressions, hence the quoted lists; this
-  # also lets `p` use the earlier entry `f_SS`.
   init_state: {type: choice, a: "['I_N', 'I_S']", p: "[1 - f_SS, f_SS]"}
-
-  # Number of sampled tips per tree (`integers` excludes `high`: 50 to 250).
   n_leaves: {type: integers, low: 50, high: 251}
 
-# ------------------------------------------------------------------------------
-# Model
-# ------------------------------------------------------------------------------
-
-# The process simulated in each trial. Each event pairs a rule (what happens)
-# with a hazard (its rate per opportunity, e.g. per eligible lineage or pair).
-# Rule and hazard parameters can be expressions of the context entries.
 model:
-  # Birth-death-sampling-hybridization: forward in time, each active lineage
-  # has a state.
   spec: bdsh
-  # State names are plain strings, not expressions: `"{init_state}"` inserts
-  # the value of the `init_state` context entry.
   init_state: "{init_state}"
-
   events:
-    # One birth event per transmission route. The events compete: an `I_N`
-    # lineage transmits at rate λ_NN + λ_NS, and each transmission creates an
-    # `I_S` lineage with probability λ_NS / (λ_NN + λ_NS).
-
-    # Same-class births omit `child_states`, so both lineages keep the parent's
-    # class.
     - rule: {spec: birth, parent_state: I_N}
       hazard: {spec: constant, rate: lambda_NN}
     - rule: {spec: birth, parent_state: I_S}
       hazard: {spec: constant, rate: lambda_SS}
-
-    # Cross-class births: `child_states` specifies the classes of the two new lineages:
-    # the parent keeps its class, and the new lineage gets the other class.
     - rule: {spec: birth, parent_state: I_N, child_states: [I_N, I_S]}
       hazard: {spec: constant, rate: lambda_NS}
     - rule: {spec: birth, parent_state: I_S, child_states: [I_S, I_N]}
       hazard: {spec: constant, rate: lambda_SN}
-
-    # Removal at total rate μ is split into two competing events, unsampled
-    # death at rate μ(1 - p) and sampling at rate μp, so that a removal is
-    # sampled with probability p. Without a state filter, they apply to both
-    # classes. `removal: true` ends the sampled lineage.
     - rule: {spec: death}
       hazard: {spec: constant, rate: death_rate}
     - rule: {spec: sampling, removal: true}
       hazard: {spec: constant, rate: psi}
 
-# ------------------------------------------------------------------------------
-# Trials
-# ------------------------------------------------------------------------------
-
-# Python expression checked after every step: the trial ends as soon as it is
-# true. Here, it ends once `n_leaves` tips are sampled, which fixes the tree size.
 stop_criterion: model.count_sampled_lineages() == n_leaves
 
-# Python expression checked when the trial ends: if false, the trial is
-# rejected and rerun with the same context. Here, it requires an active
-# lineage, rejecting epidemics that died out before `n_leaves` samples.
 acceptance_criterion: model.count_current_lineages() > 0
 
-# ------------------------------------------------------------------------------
-# Outputs
-# ------------------------------------------------------------------------------
-
-# Extra `metadata.csv` columns: Python expressions evaluated on each accepted
-# trial. Here, the fraction of active lineages that are super-spreaders, which
-# approaches `f_SS` in large outbreaks. Accepted trials have at least one active
-# lineage, so the denominator is positive.
 logs:
   ss_frequency: model.count_current_lineages("I_S") / model.count_current_lineages()
 
-# Python statements run on each accepted trial; `output_dir` is the sample's own
-# folder (e.g. `outputs/BDSS-yaml/train/data/1`). `model.history()` is the full
-# history, and `model.history(model.get_sampled_lineages())` keeps only the ancestry
-# of the sampled lineages; `dump()` writes it in Newick format. Here, only the
-# sampled tree is written.
 output_hooks:
   - model.history(model.get_sampled_lineages()).dump(output_dir / "sampled.nwk")

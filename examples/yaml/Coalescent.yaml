@@ -1,90 +1,21 @@
-# Kingman coalescent
-#
-# The genealogy of lineages sampled from a single population of constant size.
-# The simulation runs backward in time, from the samples at the present until
-# they have all merged into one common ancestor. The initial lineages are the
-# samples, and the whole genealogy is the output.
-#
-# Run it from the repository root with `phyloom examples/yaml/Coalescent.yaml`.
-# `examples/python/Coalescent.py` builds the same model with the Python API.
-
-# ------------------------------------------------------------------------------
-# Dataset settings
-# ------------------------------------------------------------------------------
-
-# Directory where the dataset is written, relative to the directory phyloom is
-# run from. Splits that already exist there are skipped, not overwritten.
 output_dir: outputs/Coalescent-yaml
-
-# Number of accepted samples in each split. Each split gets a folder in
-# `output_dir`, with one `data/<sample-id>/` folder per sample and a `metadata.csv`
-# with one row per sample (context values, rejections, run time, and logs).
 n_samples: {train: 10, val: 2, test: 2}
-
-# Number of parallel worker processes; `-1` uses all CPU cores.
 n_jobs: -1
-
-# Master random seed: rerunning with the same seed gives the same dataset.
 seed: 42
 
-# ------------------------------------------------------------------------------
-# Context
-# ------------------------------------------------------------------------------
-
-# Parameters of one sample, drawn anew for every sample and saved in
-# `metadata.csv`. Entries are evaluated top to bottom; each is a constant, a
-# Python expression of earlier entries (NumPy is available as `np`), or a random
-# draw `{type: <method>, ...}` that calls NumPy's `Generator.<method>` with the
-# given arguments.
 context:
-  # Number of sampled lineages (`integers` excludes `high`: 8 to 12).
   n_tips: {type: integers, low: 8, high: 13}
-
-  # Effective population size N_e and the rate at which each pair of lineages
-  # coalesces, 1 / (2 N_e) under the standard coalescent (time in
-  # generations). The expected time to the most recent common ancestor is
-  # 4 N_e (1 - 1 / n_tips), about 360 here.
   effective_population_size: 100
   coalescence_rate: 1 / (2 * effective_population_size)
 
-# ------------------------------------------------------------------------------
-# Model
-# ------------------------------------------------------------------------------
-
-# The process simulated in each trial. Each event pairs a rule (what happens)
-# with a hazard (its rate per opportunity, e.g. per eligible lineage or pair).
-# Rule and hazard parameters can be expressions of the context entries.
 model:
-  # Coalescent: backward in time, from t = 0 (the present, when the lineages
-  # are sampled) into the past.
   spec: coalescent
-  # Number of sampled lineages in each state (here, a single population `A`).
   init_population: {A: n_tips}
-
   events:
-    # Each pair of lineages in `current_states` merges into one ancestor in
-    # `ancestral_state`. With k lineages, the total rate is
-    # k(k - 1)/2 × `coalescence_rate`, so coalescences slow down as lineages
-    # merge. With one population, the states are only given for clarity.
     - rule: {spec: coalesce, current_states: [A, A], ancestral_state: A}
       hazard: {spec: constant, rate: coalescence_rate}
 
-# ------------------------------------------------------------------------------
-# Trials
-# ------------------------------------------------------------------------------
-
-# Python expression checked after every step: the trial ends as soon as it is
-# true. Here, it ends at the most recent common ancestor: `model.history()`
-# requires a single root lineage. There is no `acceptance_criterion`, so every
-# trial is accepted.
 stop_criterion: model.count_current_lineages() == 1
 
-# ------------------------------------------------------------------------------
-# Outputs
-# ------------------------------------------------------------------------------
-
-# Python statements run on each accepted trial; `output_dir` is the sample's own
-# folder (e.g. `outputs/Coalescent-yaml/train/data/1`). `model.history()` is the
-# full genealogy, and `dump()` writes it in Newick format.
 output_hooks:
   - model.history().dump(output_dir / "genealogy.nwk")

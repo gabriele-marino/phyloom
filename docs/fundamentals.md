@@ -40,9 +40,9 @@ Event rules are model-specific and are built by composing a small set of **linea
 
 In this section, we describe the lineage-level primitives for these three built-in models. In the next section, we describe how the scheduler uses event rules and rate functions to propose event times.
 
-### 🌱 BDSH: birth, death, sampling, and hybridization
+### 🌱 Birth-death-sampling-hybridization models
 
-The BDSH model simulates evolutionary histories forward in time. Lineage dynamics in BDSH are built from five core primitives:
+The birth-death-sampling-hybridization (BDSH) model simulates evolutionary histories forward in time. Lineage dynamics in BDSH are built from five core primitives:
 
 * **`Finalize` (termination)** ends an active lineage without recording an observation, representing unobserved extinction, natural mortality, or clearance.
 * **`Sample` (observation)** records a lineage as an observed tip. Under **sampling with removal** (e.g., isolating an infected host upon testing), the lineage terminates. Under **sampling without removal** (e.g., fossil collection), the lineage continues as an active lineage alongside the newly recorded tip.
@@ -143,7 +143,7 @@ $$t_{\mathrm{event}} = H^{-1}\left(t_0, \frac{E}{c \cdot m(X(t_0))}\right).$$
 
 If $c = 0$, $m = 0$, or $H(t_0, t)$ fails to reach the sampled threshold $E$, no firing time is proposed for that channel.
 
-Under constant rates $\lambda$, this reduces to standard exponential waiting times with total rate $\Lambda = c \cdot m \cdot \lambda$, fully equivalent to the Gillespie Next Reaction / Direct Method algorithms. By leveraging hazard inversion, Phyloom generalizes this race to non-homogeneous Poisson processes (NHPP) where hazards change over time.
+Under constant rates $\lambda$, this reduces to standard exponential waiting times with total rate $\Lambda = c \cdot m \cdot \lambda$, which is equivalent to the Gillespie Next Reaction / Direct Method algorithms. By leveraging hazard inversion, Phyloom generalizes this race to non-homogeneous Poisson processes (NHPP) where hazards change over time.
 
 Built-in hazards include **constant**, **exponentially changing**, **piecewise constant (`skyline`)**, **immediate (`delta`)**, and **numerically integrated** hazards.
 

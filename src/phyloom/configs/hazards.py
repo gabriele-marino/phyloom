@@ -32,52 +32,11 @@ if TYPE_CHECKING:
 class HazardCfgBase(ABC, BaseModel):
     """Base configuration for a :class:`~phyloom.simulator.hazards.Hazard`.
 
-    A hazard configuration declares the hazard parameters accepted in
-    configuration data, and builds the runtime hazard from them in
-    :meth:`contextualize`. Concrete hazard configurations are
-    registered in :data:`HAZARD_REGISTRY` under a unique key and are
-    selected by the ``spec`` field in configuration data. Hazards do
-    not depend on the model type, so a registered hazard can be
+    Subclasses declare the hazard parameters as fields and build the runtime
+    hazard from them in :meth:`contextualize`. Concrete configurations are
+    registered in :data:`HAZARD_REGISTRY` and selected by their ``spec`` key.
+    Hazards do not depend on the model type, so any registered hazard can be
     combined with any event rule.
-
-    To add a hazard, implement the runtime
-    :class:`~phyloom.simulator.hazards.Hazard`,
-    subclass :class:`HazardCfgBase`, implement :meth:`contextualize`, and
-    register the class:
-
-    .. code-block:: python
-
-       from phyloom.configs.hazards import HAZARD_REGISTRY, HazardCfgBase
-       from phyloom.configs.roots import FloatCfg
-       from phyloom.simulator.hazards import Hazard
-       from phyloom.types import Context
-
-       class MyHazard(Hazard):
-          def __init__(self, param: float):
-             self._param = param
-
-          def invert(self, t0: float, threshold: float) -> float | None:
-             ...
-
-       @HAZARD_REGISTRY.register("my-hazard")
-       class MyHazardCfg(HazardCfgBase):
-          param: FloatCfg
-
-          def contextualize(self, context: Context) -> MyHazard:
-             return MyHazard(self.param.contextualize(context))
-
-    Once the module defining the configuration has been imported, the hazard
-    can be selected in any event with ``spec: "my-hazard"``:
-
-    .. code-block:: yaml
-
-       model:
-          events:
-             - rule:
-                  spec: "..."
-               hazard:
-                  spec: "my-hazard"
-                  param: 1.0
     """
 
     model_config = ConfigDict(extra="forbid")

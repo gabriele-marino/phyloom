@@ -1,131 +1,39 @@
-# Susceptible-exposed-infectious-recovered (SEIR)
-#
-# SIR with an incubation stage. Infected hosts are lineages, either exposed
-# (state `E`: infected but not yet infectious) or infectious (state `I`), while
-# susceptible (`S`) and recovered (`R`) hosts are pools. `I` lineages infect
-# susceptible hosts, creating `E` lineages; `E` lineages become infectious after
-# a mean time `T_E`; `I` lineages recover at rate μ = 1 / T_I, a fraction `s` of
-# them sampled.
-#
-# Run it from the repository root with `phyloom examples/yaml/SEIR.yaml`.
-# `examples/python/SEIR.py` builds the same model with the Python API.
-
-# ------------------------------------------------------------------------------
-# Dataset settings
-# ------------------------------------------------------------------------------
-
-# Directory where the dataset is written, relative to the directory phyloom is
-# run from. Splits that already exist there are skipped, not overwritten.
 output_dir: outputs/SEIR-yaml
-
-# Number of accepted samples in each split. Each split gets a folder in
-# `output_dir`, with one `data/<sample-id>/` folder per sample and a `metadata.csv`
-# with one row per sample (context values, rejections, run time, and logs).
 n_samples: {train: 100, val: 10, test: 10}
-
-# Number of parallel worker processes; `-1` uses all CPU cores.
 n_jobs: -1
-
-# Master random seed: rerunning with the same seed gives the same dataset.
 seed: 42
 
-# ------------------------------------------------------------------------------
-# Context
-# ------------------------------------------------------------------------------
-
-# Parameters of one sample, drawn anew for every sample and saved in
-# `metadata.csv`. Entries are evaluated top to bottom; each is a constant, a
-# Python expression of earlier entries (NumPy is available as `np`), or a random
-# draw `{type: <method>, ...}` that calls NumPy's `Generator.<method>` with the
-# given arguments.
 context:
-  # Basic reproduction number: the expected number of infections caused by one
-  # infectious host in a fully susceptible population.
   R_0: {type: uniform, low: 1.5, high: 4}
-
-  # Mean durations of the exposed (latent) and infectious periods.
   T_E: {type: uniform, low: 1, high: 5}
   T_I: {type: uniform, low: 5, high: 20}
-
-  # Total recovery rate μ of an `I` lineage, and fraction `s` of recoveries that
-  # are sampled.
   mu: 1 / T_I
   s: {type: uniform, low: 0.2, high: 0.5}
-
-  # Initial number of susceptible hosts (`integers` excludes `high`: 200 to 1000).
   init_S: {type: integers, low: 200, high: 1001}
-
-  # Infection rate λ per (`I` lineage, susceptible host) pair. With mass action,
-  # the total rate is λ × #I × S. Exposed lineages never recover, so every
-  # infection becomes infectious and R_0 = λ init_S / μ, as in SIR.
   la: R_0 * mu / init_S
 
-# ------------------------------------------------------------------------------
-# Model
-# ------------------------------------------------------------------------------
-
-# The process simulated in each trial. Each event pairs a rule (what happens)
-# with a hazard (its rate per opportunity, e.g. per eligible lineage or pair).
-# Rule and hazard parameters can be expressions of the context entries.
 model:
-  # Compartmental epidemic: forward in time, infected hosts are lineages with a
-  # state, and uninfected hosts are counted in pools.
   spec: epidemic
   init_state: I
-  # Initial pool sizes; pools that are not listed, here `R`, start empty.
   init_pools: {S: init_S}
-
   events:
-    # Infection has one opportunity per (`I` lineage, `S` host) pair, and
-    # `source_state: I` keeps exposed lineages from transmitting. `child_states`
-    # specifies the states of the two new lineages: the source stays `I` and the new
-    # infection starts `E`.
     - rule: {spec: infection, recipient_pool: S, source_state: I, child_states: [I, E]}
       hazard: {spec: constant, rate: la}
-
-    # Recovery ends a lineage and adds a host to `R`. It is split into two
-    # competing events, unobserved at rate μ(1 - s) and sampled
-    # (`sample: true`) at rate μs; `source_state: I` prevents recovery during
-    # incubation. Hazard parameters are expressions, so the split can be
-    # computed inline.
     - rule: {spec: recovery, source_state: I, destination_pool: R}
       hazard: {spec: constant, rate: mu * (1 - s)}
     - rule: {spec: recovery, source_state: I, destination_pool: R, sample: true}
       hazard: {spec: constant, rate: mu * s}
-
-    # Stage progression from `E` to `I` at rate `1 / T_E`. A migration replaces a
-    # lineage with one in a new state: here, the move is between disease stages.
     - rule: {spec: migration, source_state: E, target_state: I}
       hazard: {spec: constant, rate: 1 / T_E}
 
-# ------------------------------------------------------------------------------
-# Trials
-# ------------------------------------------------------------------------------
-
-# Python expression checked after every step: the trial ends as soon as it is
-# true. Here, it ends at the 20th sampled recovery.
 stop_criterion: model.count_sampled_lineages() == 20
 
-# Python expression checked when the trial ends: if false, the trial is
-# rejected and rerun with the same context. Here, it requires an active (`E` or
-# `I`) lineage, rejecting epidemics that died out before 20 samples.
 acceptance_criterion: model.count_current_lineages() > 0
 
-# ------------------------------------------------------------------------------
-# Outputs
-# ------------------------------------------------------------------------------
-
-# Extra `metadata.csv` columns: Python expressions evaluated on each accepted
-# trial. Here, the final pool sizes, and the number of lineages still incubating.
 logs:
   still_susceptible: model.pools["S"]
   recovered: model.pools["R"]
   still_incubating: model.count_current_lineages("E")
 
-# Python statements run on each accepted trial; `output_dir` is the sample's own
-# folder (e.g. `outputs/SEIR-yaml/train/data/1`). `model.history()` is the full
-# history, and `model.history(model.get_sampled_lineages())` keeps only the ancestry
-# of the sampled lineages; `dump()` writes it in Newick format. Here, only the
-# sampled tree is written.
 output_hooks:
   - model.history(model.get_sampled_lineages()).dump(output_dir / "sampled.nwk")

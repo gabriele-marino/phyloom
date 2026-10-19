@@ -13,17 +13,7 @@ if TYPE_CHECKING:
 
 
 class FloatCfg(RootModel[NumPyExpressionCfg]):
-    """Configuration for a float-valued expression.
-
-    Examples:
-        Configure a context-dependent maximum simulation time.
-
-        .. code-block:: yaml
-
-           context:
-              birth_rate: 0.1
-           max_time: 100 / birth_rate
-    """
+    """Configuration for a float-valued NumPy expression."""
 
     root: NumPyExpressionCfg
 
@@ -33,18 +23,10 @@ class FloatCfg(RootModel[NumPyExpressionCfg]):
 
 
 class FloatSequenceCfg(RootModel[NumPyExpressionCfg | Sequence[FloatCfg]]):
-    """Configuration for a sequence of float-valued expressions.
+    """Configuration for a sequence of floats.
 
-    Examples:
-        Configure a context-dependent list of rates and break times.
-
-        .. code-block:: yaml
-
-           context:
-              first_rate: 0.1
-              rates: np.array([first_rate, 0.2, 0.3])
-              first_time: 1.0
-              break_times: [first_time, 2.0]
+    The sequence is given either as a list of float-valued expressions or as a
+    single NumPy expression that evaluates to a sequence of floats.
     """
 
     root: NumPyExpressionCfg | Sequence[FloatCfg]

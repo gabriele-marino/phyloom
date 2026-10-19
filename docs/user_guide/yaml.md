@@ -93,7 +93,9 @@ output_dir/
         └── ...
 ```
 
-Sample-specific parameters are defined in the top-level `context` mapping. Each key in this mapping is a **context variable** that can be a fixed scalar, a random draw from a distribution, or an expression derived from earlier context entries. Phyloom supports all NumPy random-generator distributions, including uniform, lognormal, and integer draws. For a full list of supported distributions and their arguments, see the [NumPy documentation](https://numpy.org/doc/stable/reference/random/generator.html). The evaluated values for these variables form the **materialized context**, which Phyloom uses to configure the execution settings for each sample. Materialized context values are also recorded in the sample's `metadata.csv` row.
+## 🎛️ Context
+
+Sample-specific parameters are defined in the top-level `context` mapping. Each key in this mapping is a **context variable** that can be a fixed scalar, a random draw from a prior distribution, or an expression derived from earlier context entries. Phyloom supports all NumPy random-generator distributions, including uniform, lognormal, and integer draws. For a full list of supported distributions and their arguments, see the [NumPy documentation](https://numpy.org/doc/stable/reference/random/generator.html). The evaluated values for these variables form the **materialized context**, which Phyloom uses to configure the model and execution settings for each sample. Materialized context values are also recorded in the sample's `metadata.csv` row.
 
 ```yaml
 context:
@@ -138,69 +140,6 @@ context:
   unsampled_exit_rate: removal_rate - sampling_rate
 ```
 
-## 🎲 Configuring stochastic events
-
-A stochastic {py:class}`event <phyloom.configs.core.EventCfg>` configuration specifies *which* transition can occur and *when* it is eligible to fire. Each event pairs a model-specific `rule` with a per-opportunity, time-dependent instantaneous rate function ({py:class}`hazard <phyloom.configs.hazards.HazardCfgBase>`). The firing rate of an event can also be scaled dynamically by an optional model state-dependent `rate_multiplier`.
-
-Phyloom supports five built-in hazard shapes:
-
-- **{py:class}`constant <phyloom.configs.hazards.ConstantHazardCfg>`**: Fires at a fixed positive `rate` over time.
-- **{py:class}`delta <phyloom.configs.hazards.DeltaHazardCfg>`**: Fires immediately upon becoming eligible; requires no additional parameters.
-- **{py:class}`exponential <phyloom.configs.hazards.ExponentialHazardCfg>`**: Defined by a positive `rate` at time $t=0$ and an exponential `decay` parameter. Positive `decay` makes the rate fall, negative `decay` makes it grow with simulation time, and zero keeps it constant.
-- **{py:class}`skyline <phyloom.configs.hazards.SkylineHazardCfg>` (piecewise-constant):** Defined by non-negative `rates` and strictly increasing, positive `break_times`. Must provide exactly one more rate than the number of break times; each break time marks the start of the next rate interval.
-- **{py:class}`numeric <phyloom.configs.hazards.NumericHazardCfg>`**: Uses a custom-defined expression `rate_fn` to compute a non-negative rate as a function of simulation time `t`.
-
-To dynamically scale hazard rates based on the model state, specify the optional `rate_multiplier` field. Defined as an expression of `model`, it provides direct access to real-time simulation properties and methods, such as the current clock time or active lineage counts. The expression must evaluate to a non-negative scalar that directly scales the hazard rate, where a value of $0$ temporarily disables the event.
-
-```yaml
-context:
-  event_rate: 0.1
-  decay: 0.05
-  change_time:
-    type: uniform
-    low: 0.1
-    high: 10.0
-  rate_before: 0.1
-  rate_after: 0.2
-  base_rate: 0.1
-  skyline_rates:
-    type: uniform
-    low: 0.1
-    high: 0.5
-    size: 10
-  break_times:
-    type: uniform
-    low: 0.1
-    high: 10.0
-    size: 9
-
-model:
-  # ...
-  events:
-    - rule: # ...
-      hazard: {spec: constant, rate: event_rate}
-      rate_multiplier: 1 / model.count_current_lineages("A") # Inversely scales rate by the count of lineages in state "A"
-    - rule: # ...
-      hazard: {spec: delta}
-    - rule: # ...
-      hazard: {spec: exponential, rate: event_rate, decay: decay}
-      rate_multiplier: float(model.current_time < 2.0) # Disables the event after time 2.0
-    - rule: # ...
-      hazard:
-        spec: skyline
-        rates: [rate_before, rate_after, 0.3]
-        break_times: [change_time, 15.0]
-    - rule: # ...
-      hazard:
-        spec: skyline
-        rates: skyline_rates
-        break_times: break_times
-    - rule: # ...
-      hazard:
-        spec: numeric
-        rate_fn: base_rate * np.exp(-decay * t)
-```
-
 ## 🧬 Model configurations
 
 A model configuration defines initial conditions alongside event-driven, dynamic behaviors. Phyloom supports three model families:
@@ -211,7 +150,7 @@ A model configuration defines initial conditions alongside event-driven, dynamic
 
 Each family includes its own initial-condition fields, while sharing support for two core sequence blocks:
 
-- **{py:class}`events <phyloom.configs.core.EventCfg>`**: Defines stochastic events along with their underlying rate functions.
+- **{py:class}`events <phyloom.configs.core.EventCfg>`**: Defines stochastic events, each pairing one of the model's rules, listed below for each family, with a hazard (see {ref}`stochastic events <yaml-stochastic-events>`).
 - **{py:class}`schedule <phyloom.configs.core.ScheduledEventCfg>`**: Defines deterministic actions to run at specific simulation times. These are composed of a `times` list and an `action` block. The `times` list specifies one or more simulation timestamps for execution, while the action block consists of executable Python statements run directly against the current `model`, allowing for dynamic lineage manipulations, state changes, and other model-specific operations.
 
 ### 🌱 BDSH
@@ -352,6 +291,71 @@ model:
           model.flow("S", "R")
 ```
 
+(yaml-stochastic-events)=
+
+## 🎲 Configuring stochastic events
+
+A stochastic {py:class}`event <phyloom.configs.core.EventCfg>` configuration specifies *which* transition can occur and *when* it is eligible to fire. Each event pairs a `rule` of its model, from those listed above, with a per-opportunity, time-dependent instantaneous rate function ({py:class}`hazard <phyloom.configs.hazards.HazardCfgBase>`). The firing rate of an event can also be scaled dynamically by an optional model state-dependent `rate_multiplier`.
+
+Phyloom supports five built-in hazard shapes:
+
+- **{py:class}`constant <phyloom.configs.hazards.ConstantHazardCfg>`**: Fires at a fixed positive `rate` over time.
+- **{py:class}`delta <phyloom.configs.hazards.DeltaHazardCfg>`**: Fires immediately upon becoming eligible; requires no additional parameters.
+- **{py:class}`exponential <phyloom.configs.hazards.ExponentialHazardCfg>`**: Defined by a positive `rate` at time $t=0$ and an exponential `decay` parameter. Positive `decay` makes the rate fall, negative `decay` makes it grow with simulation time, and zero keeps it constant.
+- **{py:class}`skyline <phyloom.configs.hazards.SkylineHazardCfg>` (piecewise-constant):** Defined by non-negative `rates` and strictly increasing, positive `break_times`. Must provide exactly one more rate than the number of break times; each break time marks the start of the next rate interval.
+- **{py:class}`numeric <phyloom.configs.hazards.NumericHazardCfg>`**: Uses a custom-defined expression `rate_fn` to compute a non-negative rate as a function of simulation time `t`.
+
+To dynamically scale hazard rates based on the model state, specify the optional `rate_multiplier` field. Defined as an expression of `model`, it provides direct access to real-time simulation properties and methods, such as the current clock time or active lineage counts. The expression must evaluate to a non-negative scalar that directly scales the hazard rate, where a value of $0$ temporarily disables the event.
+
+```yaml
+context:
+  event_rate: 0.1
+  decay: 0.05
+  change_time:
+    type: uniform
+    low: 0.1
+    high: 10.0
+  rate_before: 0.1
+  rate_after: 0.2
+  base_rate: 0.1
+  skyline_rates:
+    type: uniform
+    low: 0.1
+    high: 0.5
+    size: 10
+  break_times:
+    type: uniform
+    low: 0.1
+    high: 10.0
+    size: 9
+
+model:
+  # ...
+  events:
+    - rule: # ...
+      hazard: {spec: constant, rate: event_rate}
+      rate_multiplier: 1 / model.count_current_lineages("A") # Inversely scales rate by the count of lineages in state "A"
+    - rule: # ...
+      hazard: {spec: delta}
+    - rule: # ...
+      hazard: {spec: exponential, rate: event_rate, decay: decay}
+      rate_multiplier: float(model.current_time < 2.0) # Disables the event after time 2.0
+    - rule: # ...
+      hazard:
+        spec: skyline
+        rates: [rate_before, rate_after, 0.3]
+        break_times: [change_time, 15.0]
+    - rule: # ...
+      hazard:
+        spec: skyline
+        rates: skyline_rates
+        break_times: break_times
+    - rule: # ...
+      hazard:
+        spec: numeric
+        rate_fn: base_rate * np.exp(-decay * t)
+```
+
 ## 🏃 Execution settings
 
 Execution settings control when a trial ends, whether it is accepted, and what is recorded in the output.
@@ -364,12 +368,15 @@ Execution settings control when a trial ends, whether it is accepted, and what i
 - **`timeout`** is an optional wall-clock limit in seconds for one trial. Timed-out contexts are written to `timed_out_contexts.csv` in the run's output directory (`output_dir` for an unsplit run or `output_dir/<split>` for a split run), then replaced with newly sampled contexts.
 - **`logs`** maps metadata column names to Python expressions evaluated on the accepted `model`, after `stop_hook` runs. Their results are written to `metadata.csv`.
 - **`output_hooks`** is a required list of Python statement blocks run for each accepted sample, after logs are evaluated. Each block receives the accepted `model` and `output_dir`, which is the sample-specific output directory where it can write files.
+- **`post_commands`** is an optional list of shell commands run last for each accepted sample, after the output hooks, with `{name}` placeholders filled from the materialized context and the sample-specific `output_dir`.
 
 ```yaml
 context:
   target_samples: {type: integers, low: 10, high: 21}
   birth_rate: 0.4
   sampling_rate: 0.2
+  clock_rate: {type: uniform, low: 0.001, high: 0.01}
+  seq_length: {type: integers, low: 500, high: 1001}
 
 model:
   spec: bdsh
@@ -400,4 +407,11 @@ logs:
 output_hooks:
   - model.history().dump(output_dir / "history.nwk")
   - model.history(model.get_sampled_lineages()).dump(output_dir / "sampled.nwk")
+
+# Run AliSim on the sampled tree to simulate a DNA alignment along it
+# (requires IQ-TREE 3 installed with its `iqtree3` command on your PATH)
+post_commands:
+  - iqtree3 --alisim {output_dir}/alignment -t {output_dir}/sampled.nwk
+    -m JC --length {seq_length} --branch-scale {clock_rate}
+    -af fasta
 ```

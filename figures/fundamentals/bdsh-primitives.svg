@@ -462,47 +462,47 @@
      id="line33" />
   <circle
      class="active"
-     cx="113.71907"
+     cx="170"
      cy="800.64825"
      r="14"
      id="circle33" />
   <text
      class="legend"
-     x="138.71907"
+     x="195"
      y="806.64825"
      id="text34"
-     style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Active after event</text>
+     style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Active lineage after the event</text>
   <circle
      class="inactive"
-     cx="373.71906"
+     cx="534"
      cy="800.64825"
      r="14"
      id="circle34" />
   <text
      class="legend"
-     x="398.71906"
+     x="559"
      y="806.64825"
      id="text35"
-     style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Removed or replaced lineage</text>
+     style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Ended or replaced lineage</text>
   <path
      class="unobserved"
-     d="m 754.71906,791.64825 18,18 m 0,-18 -18,18"
+     d="m 849,791.64825 18,18 m 0,-18 -18,18"
      id="path35" />
   <text
      class="legend"
-     x="788.71906"
+     x="883"
      y="806.64825"
      id="text36"
      style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Unobserved termination</text>
   <circle
      class="sampled"
-     cx="1128.7191"
+     cx="1165"
      cy="800.64825"
      r="14"
      id="circle36" />
   <text
      class="legend"
-     x="1153.7191"
+     x="1190"
      y="806.64825"
      id="text37"
      style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Recorded sample</text>

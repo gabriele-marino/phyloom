@@ -1,85 +1,24 @@
-# Binary-state speciation and extinction (BiSSE)
-#
-# A binary trait, `A` or `B`, sets each lineage's speciation (`la_A`, `la_B`)
-# and extinction (`mu_A`, `mu_B`) rates, and lineages switch trait at rate `m`.
-# The clade is observed in two ways: fossil-like sampling at rate `psi` during
-# the simulation, and sampling of a fraction `rho_sample_A` or `rho_sample_B` of
-# the surviving lineages at the present (`max_time`), the end of the simulation.
-#
-# Run it from the repository root with `phyloom examples/yaml/BiSSE.yaml`.
-# `examples/python/BiSSE.py` builds the same model with the Python API.
-
-# ------------------------------------------------------------------------------
-# Dataset settings
-# ------------------------------------------------------------------------------
-
-# Directory where the dataset is written, relative to the directory phyloom is
-# run from. Splits that already exist there are skipped, not overwritten.
 output_dir: outputs/BiSSE-yaml
-
-# Number of accepted samples in each split. Each split gets a folder in
-# `output_dir`, with one `data/<sample-id>/` folder per sample and a `metadata.csv`
-# with one row per sample (context values, rejections, run time, and logs).
 n_samples: {train: 100, val: 10, test: 10}
-
-# Number of parallel worker processes; `-1` uses all CPU cores.
 n_jobs: -1
-
-# Master random seed: rerunning with the same seed gives the same dataset.
 seed: 42
 
-# ------------------------------------------------------------------------------
-# Context
-# ------------------------------------------------------------------------------
-
-# Parameters of one sample, drawn anew for every sample and saved in
-# `metadata.csv`. Entries are evaluated top to bottom; each is a constant, a
-# Python expression of earlier entries (NumPy is available as `np`), or a random
-# draw `{type: <method>, ...}` that calls NumPy's `Generator.<method>` with the
-# given arguments.
 context:
-  # Speciation and extinction rates of each trait. Bounds can use earlier
-  # entries, which restricts the prior without rejection: `B` speciates one to
-  # two times as fast as `A`, and each extinction rate is 20-50% of the matching
-  # speciation rate, so the clade is expected to grow with either trait.
   la_A: {type: uniform, low: 0.1, high: 0.3}
   la_B: {type: uniform, low: la_A, high: 2 * la_A}
   mu_A: {type: uniform, low: la_A / 5, high: la_A / 2}
   mu_B: {type: uniform, low: la_B / 5, high: la_B / 2}
-
-  # Fossil-like sampling rate `psi` (small: a sparse record), and
-  # trait-switching rate `m` in each direction (low, so the trait stays
-  # phylogenetically structured).
   psi: {type: uniform, low: 0.001, high: 0.005}
   m: {type: uniform, low: 0.01, high: 0.05}
-
-  # Trait of the first lineage: `A` or `B` with equal probability.
-  # Distribution arguments are Python expressions, hence the quoted lists.
   init_state: {type: choice, a: "['A', 'B']", p: "[0.5, 0.5]"}
-
-  # Duration of the simulation, and fraction of the surviving lineages of each
-  # trait sampled at its end.
   max_time: {type: uniform, low: 10, high: 20}
   rho_sample_A: {type: uniform, low: 0.5, high: 0.9}
   rho_sample_B: {type: uniform, low: 0.5, high: 0.9}
 
-# ------------------------------------------------------------------------------
-# Model
-# ------------------------------------------------------------------------------
-
-# The process simulated in each trial. Each event pairs a rule (what happens)
-# with a hazard (its rate per opportunity, e.g. per eligible lineage or pair).
-# Rule and hazard parameters can be expressions of the context entries.
 model:
-  # Birth-death-sampling-hybridization: forward in time, each active lineage
-  # has a state.
   spec: bdsh
-  # State names are plain strings, not expressions: `"{init_state}"` inserts
-  # the value of the `init_state` context entry.
   init_state: "{init_state}"
-
   events:
-    # Speciation and extinction depend on the trait: one rule per state.
     - rule: {spec: birth, parent_state: A}
       hazard: {spec: constant, rate: la_A}
     - rule: {spec: birth, parent_state: B}
@@ -88,64 +27,26 @@ model:
       hazard: {spec: constant, rate: mu_A}
     - rule: {spec: death, state: B}
       hazard: {spec: constant, rate: mu_B}
-
-    # Trait switching: a migration replaces a lineage with one in the other
-    # state, at the same rate in both directions.
     - rule: {spec: migration, source_state: A, target_state: B}
       hazard: {spec: constant, rate: m}
     - rule: {spec: migration, source_state: B, target_state: A}
       hazard: {spec: constant, rate: m}
-
-    # Fossil-like sampling. `removal: false` records a sample and keeps the
-    # lineage active, so the sample can appear in the tree as a sampled
-    # ancestor (a tip on a zero-length branch).
     - rule: {spec: sampling, removal: false}
       hazard: {spec: constant, rate: psi}
-
-  # Deterministic actions: each entry runs its action, Python statements with
-  # `model` in scope, at the given times (`|` keeps the lines together as one
-  # block). Here, at `max_time`, `rho_sample` samples each active lineage of the
-  # given trait independently with the given probability.
   schedule:
     - times: [max_time]
       action: |
         model.rho_sample(rho_sample_A, "A", removal=False)
         model.rho_sample(rho_sample_B, "B", removal=False)
 
-# ------------------------------------------------------------------------------
-# Trials
-# ------------------------------------------------------------------------------
-
-# Upper bound on simulated time: events and actions due exactly at `max_time`
-# still happen. Here, it is the `max_time` context entry (the right-hand side is
-# an expression). There is no `stop_criterion`, so every trial runs to
-# `max_time` unless the clade dies out first, and trees vary in size.
 max_time: max_time
 
-# Python expression checked when the trial ends: if false, the trial is
-# rejected and rerun with the same context. Here, it requires more than ten
-# samples of each trait, rejecting clades that died out or rarely switched.
 acceptance_criterion: (
     model.count_sampled_lineages("A") > 10
     and model.count_sampled_lineages("B") > 10
   )
 
-# Maximum number of rejected trials per context: beyond it, the context is
-# saved to `max_rejections_exceeded_contexts.csv` and replaced with a new draw.
-# Here, it bounds the effort spent on contexts that rarely pass the acceptance
-# criterion. Such contexts are then under-represented in the dataset.
 max_rejections: 10
 
-# ------------------------------------------------------------------------------
-# Outputs
-# ------------------------------------------------------------------------------
-
-# Python statements run on each accepted trial; `output_dir` is the sample's own
-# folder (e.g. `outputs/BiSSE-yaml/train/data/1`). `model.history()` is the full
-# history, and `model.history(model.get_sampled_lineages())` keeps only the ancestry
-# of the sampled lineages; `dump()` writes it in Newick format. Here, only the
-# sampled tree is written, with both fossil-like and present-day samples. Node
-# labels carry the trait (e.g. `11|A`), carrying the evolutionary history of the
-# trait through the tree.
 output_hooks:
   - model.history(model.get_sampled_lineages()).dump(output_dir / "sampled.nwk")

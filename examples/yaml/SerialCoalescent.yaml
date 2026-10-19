@@ -1,0 +1,33 @@
+output_dir: outputs/SerialCoalescent-yaml
+n_samples: {train: 10, val: 2, test: 2}
+n_jobs: -1
+seed: 46
+
+context:
+  n_present: {type: integers, low: 4, high: 9}
+  n_past: {type: integers, low: 4, high: 9}
+  effective_population_size: 100
+  coalescence_rate: 1 / (2 * effective_population_size)
+  sampling_times: {type: uniform, low: 0, high: 2 * effective_population_size, size: n_past}
+  oldest_sampling_time: sampling_times.max()
+
+model:
+  spec: coalescent
+  init_population: {A: n_present}
+  events:
+    - rule: {spec: coalesce, current_states: [A, A], ancestral_state: A}
+      hazard: {spec: constant, rate: coalescence_rate}
+  schedule:
+    - times: sampling_times
+      action: model.spawn("A")
+
+stop_criterion: (
+    model.current_time >= oldest_sampling_time
+    and model.count_current_lineages() == 1
+  )
+
+logs:
+  tmrca: model.current_time
+
+output_hooks:
+  - model.history().dump(output_dir / "genealogy.nwk")

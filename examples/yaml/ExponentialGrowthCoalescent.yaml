@@ -1,97 +1,26 @@
-# Coalescent with exponential growth
-#
-# The genealogy of lineages sampled from a population that has grown
-# exponentially at rate g. Backward in time, the effective population size
-# N_e(t) = N_e(0) exp(-g t) shrinks, so the pairwise coalescence rate
-# 1 / (2 N_e(t)) grows as exp(g t). Genealogies are star-like, with long
-# terminal branches and ancestors compressed near the root.
-#
-# Run it from the repository root with `phyloom examples/yaml/ExponentialGrowthCoalescent.yaml`.
-# `examples/python/ExponentialGrowthCoalescent.py` builds the same model with the Python API.
-
-# ------------------------------------------------------------------------------
-# Dataset settings
-# ------------------------------------------------------------------------------
-
-# Directory where the dataset is written, relative to the directory phyloom is
-# run from. Splits that already exist there are skipped, not overwritten.
 output_dir: outputs/ExponentialGrowthCoalescent-yaml
-
-# Number of accepted samples in each split. Each split gets a folder in
-# `output_dir`, with one `data/<sample-id>/` folder per sample and a `metadata.csv`
-# with one row per sample (context values, rejections, run time, and logs).
 n_samples: {train: 10, val: 2, test: 2}
-
-# Number of parallel worker processes; `-1` uses all CPU cores.
 n_jobs: -1
-
-# Master random seed: rerunning with the same seed gives the same dataset.
 seed: 44
 
-# ------------------------------------------------------------------------------
-# Context
-# ------------------------------------------------------------------------------
-
-# Parameters of one sample, drawn anew for every sample and saved in
-# `metadata.csv`. Entries are evaluated top to bottom; each is a constant, a
-# Python expression of earlier entries (NumPy is available as `np`), or a random
-# draw `{type: <method>, ...}` that calls NumPy's `Generator.<method>` with the
-# given arguments.
 context:
-  # Number of sampled lineages (`integers` excludes `high`: 8 to 12).
   n_tips: {type: integers, low: 8, high: 13}
-
-  # Effective population size N_e(0) at the present, and growth rate g.
   present_effective_population_size: 1000
   growth_rate: 0.1
-
-  # Parameters of the exponential hazard, `rate * exp(-decay * t)`: the pairwise
-  # rate at the present, 1 / (2 N_e(0)), and `decay` = -g, negative because the
-  # rate grows into the past. Deriving the decay here keeps the sign
-  # convention visible and records it in `metadata.csv`.
   coalescence_rate_at_present: 1 / (2 * present_effective_population_size)
   hazard_decay: -growth_rate
 
-# ------------------------------------------------------------------------------
-# Model
-# ------------------------------------------------------------------------------
-
-# The process simulated in each trial. Each event pairs a rule (what happens)
-# with a hazard (its rate per opportunity, e.g. per eligible lineage or pair).
-# Rule and hazard parameters can be expressions of the context entries.
 model:
-  # Coalescent: backward in time, from t = 0 (the present, when the lineages
-  # are sampled) into the past.
   spec: coalescent
-  # Number of sampled lineages in each state (here, a single population `A`).
   init_population: {A: n_tips}
-
   events:
-    # Each pair of lineages in `current_states` merges into one ancestor in
-    # `ancestral_state`, at a time-dependent rate. The rate grows without bound,
-    # so all lineages eventually coalesce despite the large N_e(0).
     - rule: {spec: coalesce}
       hazard:
         spec: exponential
         rate: coalescence_rate_at_present
         decay: hazard_decay
 
-# ------------------------------------------------------------------------------
-# Trials
-# ------------------------------------------------------------------------------
-
-# Python expression checked after every step: the trial ends as soon as it is
-# true. Here, it ends at the most recent common ancestor: `model.history()`
-# requires a single root lineage. There is no `acceptance_criterion`, so every trial
-# is accepted.
 stop_criterion: model.count_current_lineages() == 1
 
-# ------------------------------------------------------------------------------
-# Outputs
-# ------------------------------------------------------------------------------
-
-# Python statements run on each accepted trial; `output_dir` is the sample's own
-# folder (e.g. `outputs/ExponentialGrowthCoalescent-yaml/train/data/1`).
-# `model.history()` is the full genealogy, and `dump()` writes it in Newick format.
 output_hooks:
   - model.history().dump(output_dir / "genealogy.nwk")

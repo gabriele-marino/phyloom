@@ -48,7 +48,7 @@ class Tree(Net[LengthT_co]):
         ((2, 4, 3), 3)
         >>> tree.get_internals(), tree.count_internals()
         ((0, 1), 2)
-        >>> tree.edge_length_of(0), tree.edge_length_of(4)
+        >>> tree.edge_of(0).length, tree.edge_of(4).length
         (0.1, 0.5)
         >>> tree.is_binary()
         True
@@ -90,13 +90,13 @@ class Tree(Net[LengthT_co]):
         (parent,) = self.parents_of(node)
         return parent
 
-    def edge_length_of(self, node: NodeID) -> LengthT_co:
-        """Get the length of the edge entering a node."""
+    def edge_of(self, node: NodeID) -> Edge[LengthT_co]:
+        """Get the edge leading into a node."""
         if node == self.root:
             if self.stem is None:
                 raise ValueError("The root node has no stem edge.")
-            return self.stem.length
-        return self.edges[(self.parent_of(node), node)].length
+            return self.stem
+        return self.edges[(self.parent_of(node), node)]
 
     def is_binary(self) -> bool:
         """Check whether every internal node has exactly two children."""

@@ -12,21 +12,8 @@ class StrCfg(RootModel[str]):
     """Configuration for a context-interpolated string.
 
     Interpolation is performed using standard Python string formatting
-    (:meth:`str.format`), where placeholders matching context variables
-    are replaced with their corresponding values.
-
-    Examples:
-        Configure a context-dependent initial state for an epidemic model.
-
-        .. code-block:: yaml
-
-           context:
-              init_state:
-                 type: choice
-                 a: "['A', 'B']"
-           model:
-              spec: epidemic
-              init_state: "{init_state}"
+    (:meth:`str.format`), where ``{name}`` placeholders matching context
+    variables are replaced with their corresponding values.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -39,19 +26,7 @@ class StrCfg(RootModel[str]):
 
 
 class StrPairCfg(RootModel[tuple[StrCfg, StrCfg]]):
-    """Configuration for a pair of context-interpolated strings.
-
-    Examples:
-        Configure a context-dependent pair of strings.
-
-        .. code-block:: yaml
-
-           context:
-              first_parent_state:
-                 type: choice
-                 a: "['A', 'B']"
-           parent_states: ["{first_parent_state}", "C"]
-    """
+    """Configuration for a pair of context-interpolated strings."""
 
     root: tuple[StrCfg, StrCfg]
 

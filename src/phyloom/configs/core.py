@@ -11,7 +11,7 @@ from phyloom.configs.hazards import HazardCfg
 from phyloom.configs.roots import (
     FloatSequenceCfg,
     ModelActionCfg,
-    ModelNonNegativeFloatCfg,
+    NonNegativeModelFnCfg,
 )
 from phyloom.configs.utils import contextualize_optional
 from phyloom.simulator.core import Event, Model, ModelT_contra
@@ -29,64 +29,10 @@ RuleCfgT_co = TypeVar("RuleCfgT_co", bound="EventRuleCfg[Any]", covariant=True)
 class EventRuleCfg(ABC, BaseModel, Generic[ModelT_contra]):
     """Base configuration for a model-specific :class:`~phyloom.simulator.core.EventRule`.
 
-    An event-rule configuration declares the parameters of an event rule
-    accepted in configuration data, and builds the runtime rule from them
-    in :meth:`contextualize`.
-
-    Event rules are specific to a model type, so concrete configurations are
-    registered in that model's event-rule :class:`~phyloom.utils.Registry`
-    rather than in a global one. To add an event rule:
-
-    1. implement the runtime rule, a :class:`~phyloom.simulator.core.EventRule`
-       providing ``opportunities`` and ``apply`` for the target model;
-    2. subclass :class:`EventRuleCfg`, parametrized by the target model type,
-       and declare the rule's parameters as fields;
-    3. implement :meth:`contextualize` to resolve those fields and return a
-       new runtime rule; and
-    4. register the class under a unique key in the target model's event-rule
-       registry.
-
-    .. code-block:: python
-
-       from phyloom.configs.core import EventRuleCfg
-       from phyloom.configs.roots import StrCfg
-       from phyloom.simulator.core import EventRule
-       from phyloom.types import Context
-
-       class MyEventRule(EventRule[MyModel]):
-          def __init__(self, param: str):
-             self._param = param
-
-          def opportunities(self, model: MyModel) -> int:
-             ...
-
-          def apply(self, model: MyModel) -> None:
-             ...
-
-       @MY_MODEL_EVENT_RULE_REGISTRY.register("my-event-rule")
-       class MyEventRuleCfg(EventRuleCfg[MyModel]):
-          param: StrCfg
-
-          def contextualize(self, context: Context) -> MyEventRule:
-             return MyEventRule(self.param.contextualize(context))
-
-    Here ``MyModel`` stands for the target model type and
-    ``MY_MODEL_EVENT_RULE_REGISTRY`` for its event-rule registry. Once the
-    module defining the configuration has been imported, the rule can be
-    selected in an event of that model with ``spec: "my-event-rule"`` and
-    combined with any hazard:
-
-    .. code-block:: yaml
-
-       model:
-          spec: "my-model"
-          events:
-             - rule:
-                  spec: "my-event-rule"
-                  param: "..."
-               hazard:
-                  spec: "constant"
-                  rate: 0.1
+    Subclasses declare the parameters of an event rule as fields and build the
+    runtime rule from them in :meth:`contextualize`. Event rules act on a
+    specific model type, so concrete configurations are registered in the
+    event-rule :class:`~phyloom.utils.Registry` of that model.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -116,7 +62,7 @@ class EventCfg(BaseModel, Generic[RuleCfgT_co]):
 
     rule: RuleCfgT_co
     hazard: HazardCfg
-    rate_multiplier: ModelNonNegativeFloatCfg | None = None
+    rate_multiplier: NonNegativeModelFnCfg | None = None
 
     def contextualize(
         self: EventCfg[EventRuleCfg[ModelT]], context: Context
@@ -133,8 +79,8 @@ class ScheduledEventCfg(BaseModel):
     """Configuration for an action executed at one or more fixed times.
 
     Args:
-        action: Model expression evaluated at each scheduled time.
-        times: Non-negative simulated times at which to evaluate the action.
+        action: Model statements run at each scheduled time.
+        times: Non-negative simulated times at which to run the action.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -155,91 +101,10 @@ class ScheduledEventCfg(BaseModel):
 class ModelCfgBase(ABC, BaseModel):
     """Base configuration for a :class:`~phyloom.simulator.core.Model`.
 
-    A model configuration declares the model parameters accepted in
-    configuration data, together with its ``events`` and ``schedule``,
-    and builds a new runtime model from them in :meth:`contextualize`.
-    Concrete configurations are registered in :data:`MODEL_REGISTRY`
-    under a unique key and are selected by the ``spec`` field in
-    configuration data.
-
-    A complete model extension has four pieces:
-
-    * a :class:`~phyloom.simulator.core.Model` subclass implementing the
-      model-specific state and operations;
-    * one or more :class:`~phyloom.simulator.core.EventRule` implementations
-      and their :class:`EventRuleCfg` configurations;
-    * an event-rule :class:`~phyloom.utils.Registry` for those
-      configurations, together with an :obj:`~typing.Annotated` alias that
-      attaches the registry's :attr:`~phyloom.utils.Registry.validator`, so
-      that each :class:`EventCfg` selects its rule by ``spec``; and
-    * a registered :class:`ModelCfgBase` subclass that contextualizes the
-      model parameters, events, and scheduled actions.
-
-    .. code-block:: python
-
-       from typing import Annotated, TypeAlias
-
-       from phyloom.configs.core import (
-          MODEL_REGISTRY,
-          EventCfg,
-          EventRuleCfg,
-          ModelCfgBase,
-          ScheduledEventCfg,
-       )
-       from phyloom.configs.roots import FloatCfg
-       from phyloom.simulator.core import Model
-       from phyloom.types import Context
-       from phyloom.utils import Registry
-
-       class MyModel(Model):
-          def __init__(self, param: float, events=(), schedule=()):
-             super().__init__(events, schedule)
-             ...
-
-       MY_MODEL_EVENT_RULE_REGISTRY: Registry[EventRuleCfg[MyModel]] = Registry(
-          "My model event rule", EventRuleCfg[MyModel]
-       )
-       MyModelEventRuleCfg: TypeAlias = Annotated[
-          EventRuleCfg[MyModel], MY_MODEL_EVENT_RULE_REGISTRY.validator
-       ]
-
-       # Register event-rule configurations in MY_MODEL_EVENT_RULE_REGISTRY,
-       # as described in EventRuleCfg.
-
-       @MODEL_REGISTRY.register("my-model")
-       class MyModelCfg(ModelCfgBase):
-          param: FloatCfg
-          events: tuple[EventCfg[MyModelEventRuleCfg], ...] = ()
-          schedule: tuple[ScheduledEventCfg, ...] = ()
-
-          def contextualize(self, context: Context) -> MyModel:
-             return MyModel(
-                self.param.contextualize(context),
-                events=[event.contextualize(context) for event in self.events],
-                schedule=[
-                   item
-                   for entry in self.schedule
-                   for item in entry.contextualize(context)
-                ],
-             )
-
-    Once the module defining the configuration has been imported, the model
-    can be selected in configuration data with ``spec: "my-model"``:
-
-    .. code-block:: yaml
-
-       model:
-          spec: "my-model"
-          param: 0.5
-          events:
-             - rule:
-                  spec: "my-event-rule"
-               hazard:
-                  spec: "constant"
-                  rate: 0.1
-          schedule:
-             - times: [10.0]
-               action: "..."
+    Subclasses declare the model parameters, together with the model's
+    ``events`` and ``schedule``, as fields and build a new runtime model from
+    them in :meth:`contextualize`. Concrete configurations are registered in
+    :data:`MODEL_REGISTRY` and selected by their ``spec`` key.
     """
 
     model_config = ConfigDict(extra="forbid")

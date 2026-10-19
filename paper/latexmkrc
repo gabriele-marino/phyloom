@@ -1,0 +1,3 @@
+@default_files = ('supplementary/supplementary.tex', 'main/main.tex');
+$do_cd = 1;
+$pdf_mode = 1;

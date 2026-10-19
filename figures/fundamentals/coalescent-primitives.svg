@@ -51,7 +51,7 @@
       .spawn-guide { stroke: #f59e0b; stroke-width: 3; stroke-dasharray: 7 8; opacity: .7; }
       .spawn-edge { fill: none; stroke: #0f766e; stroke-width: 9; stroke-linecap: round; }
       .spawn-active { fill: #fff; stroke: #0f766e; stroke-width: 5; stroke-dasharray: 2 8; stroke-linecap: round; }
-      .spawn-origin { fill: #0f766e; stroke: #fff; stroke-width: 3; }
+      .spawn-trace { fill: none; stroke: #0f766e; stroke-width: 8; stroke-dasharray: 2 14; stroke-linecap: round; }
       .spawn-label { font: 600 16px system-ui, -apple-system, Segoe UI, sans-serif; fill: #0f766e; text-anchor: middle; }
       .spawn-time { font: 600 15px system-ui, -apple-system, Segoe UI, sans-serif; fill: #b45309; text-anchor: middle; }
       .time-arrow { stroke: #94a3b8; stroke-width: 5; stroke-linecap: round; marker-end: url(#arrow); }
@@ -195,11 +195,11 @@
        id="text10"
        style="font-style:normal;font-variant:normal;font-weight:600;font-stretch:normal;font-size:15px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif;fill:#ff9955">Spawn time</text>
     <path
-       class="spawn-edge"
-       d="M 583,320 H 858"
+       class="spawn-trace"
+       d="M 585,320 H 905"
        id="path10" />
     <circle
-       class="spawn-active"
+       class="active"
        cx="556"
        cy="320"
        r="27"
@@ -209,12 +209,6 @@
        x="556"
        y="320"
        id="text11">A</text>
-    <circle
-       class="spawn-origin"
-       cx="870"
-       cy="320"
-       r="12"
-       id="circle12" />
   </g>
   <g
      id="retrace">
@@ -290,24 +284,24 @@
      id="line19" />
   <circle
      class="active"
-     cx="376.42142"
+     cx="406.42142"
      cy="613.1745"
      r="14"
      id="circle19" />
   <text
      class="text"
-     x="402.42142"
+     x="432.42142"
      y="619.1745"
      id="text20">Active lineage after the event</text>
   <circle
      class="inactive"
-     cx="710.42145"
+     cx="740.42145"
      cy="613.1745"
      r="14"
      id="circle20" />
   <text
      class="text"
-     x="736.42145"
+     x="766.42145"
      y="619.1745"
-     id="text21">Lineage no longer active after the event</text>
+     id="text21">Ended or replaced lineage</text>
 </svg>

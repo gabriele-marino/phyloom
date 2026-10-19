@@ -405,49 +405,49 @@
      id="line32" />
   <circle
      class="active"
-     cx="224.69594"
+     cx="105"
      cy="692.78375"
      r="15"
      id="circle33" />
   <text
      class="legend"
-     x="249.69594"
+     x="130"
      y="698.78375"
      id="text34"
-     style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Active lineage</text>
+     style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Active lineage after the event</text>
   <circle
      class="inactive"
-     cx="429.69595"
+     cx="435"
      cy="692.78375"
      r="15"
      id="circle34" />
   <text
      class="legend"
-     x="454.69595"
+     x="460"
      y="698.78375"
      id="text35"
-     style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Ended parent lineage</text>
+     style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Ended or replaced lineage</text>
   <circle
      class="hybrid"
-     cx="689.69592"
+     cx="730"
      cy="692.78375"
      r="15"
      id="circle35" />
   <text
      class="legend"
-     x="714.69592"
+     x="755"
      y="698.78375"
      id="text36"
-     style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Active hybrid descendant</text>
+     style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Active hybrid lineage after the event</text>
   <circle
      class="offspring"
-     cx="978.69592"
+     cx="1115"
      cy="692.78375"
      r="15"
      id="circle36" />
   <text
      class="legend"
-     x="1003.6959"
+     x="1140"
      y="698.78375"
      id="text37"
      style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:17px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Offspring before hybridization</text>

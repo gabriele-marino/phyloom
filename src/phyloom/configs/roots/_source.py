@@ -1,5 +1,3 @@
-"""Configuration types for validated Python source expressions and statements."""
-
 from __future__ import annotations
 
 from functools import cache
@@ -52,29 +50,10 @@ class ExpressionCfg(_SourceCfg):
     The expression is syntax-checked during validation and evaluated later,
     during a simulation. It sees the materialized context, :mod:`numpy` as
     ``np``, and the keyword bindings passed to :meth:`evaluate` or
-    :meth:`evaluate_typed`, which take precedence over context names. The
-    source is not sandboxed, so configuration input must be trusted.
-
-    To write an expression type, subclass this class and implement
-    ``contextualize`` so that it returns a function that evaluates the
-    expression each time it is called, then checks the result.
-
-    Examples:
-        A non-negative rate that depends on the model and a lineage state:
-
-        .. code-block:: python
-
-           class MyRateCfg(ExpressionCfg):
-               def contextualize(self, context: Context) -> Callable[[Any, Any], float]:
-                   def rate(model: Any, state: Any) -> float:
-                       value = self.evaluate_typed(
-                           context, FLOAT_TG, model=model, state=state
-                       )
-                       if value < 0:
-                           raise ValueError(f"Negative rate {value}.")
-                       return value
-
-                   return rate
+    :meth:`evaluate_typed`, which take precedence over context names.
+    Subclasses implement ``contextualize`` to return a function that evaluates
+    the expression each time it is called. The source is not sandboxed, so
+    configuration input must be trusted.
     """
 
     _MODE: ClassVar[Literal["eval", "exec"]] = "eval"
@@ -106,24 +85,9 @@ class StatementCfg(_SourceCfg):
     The statements are syntax-checked during validation and run later, during
     a simulation. They see the materialized context, :mod:`numpy` as ``np``,
     and the keyword bindings passed to :meth:`execute`, which take precedence
-    over context names. The source is not sandboxed, so configuration input
-    must be trusted.
-
-    To write a statement type, subclass this class and implement
-    ``contextualize`` so that it returns a function that runs the statements
-    each time it is called.
-
-    Examples:
-        A generic hook to update the model state:
-
-        .. code-block:: python
-
-           class MyHookCfg(StatementCfg):
-               def contextualize(self, context: Context) -> Callable[[Any], None]:
-                   def hook(model: Any) -> None:
-                       self.execute(context, model=model)
-
-                   return hook
+    over context names. Subclasses implement ``contextualize`` to return a
+    function that runs the statements each time it is called. The source is
+    not sandboxed, so configuration input must be trusted.
     """
 
     _MODE: ClassVar[Literal["eval", "exec"]] = "exec"
@@ -134,17 +98,7 @@ class StatementCfg(_SourceCfg):
 
 
 class NumPyExpressionCfg(ExpressionCfg):
-    """Configuration for a numerical expression with no extra bindings.
-
-    Examples:
-        Configure a derived context variable.
-
-        .. code-block:: yaml
-
-           context:
-              generation_time: 2.5
-              death_rate: np.exp(-0.1 * generation_time)
-    """
+    """Configuration for a NumPy expression."""
 
     model_config = ConfigDict(coerce_numbers_to_str=True)
 
@@ -162,20 +116,10 @@ class NumPyExpressionCfg(ExpressionCfg):
 
 
 class NonNegativeTimeFnCfg(ExpressionCfg):
-    """Configuration for a non-negative float expression of the time ``t``.
-
-    Examples:
-        Configure the rate function of a numeric hazard that decays over time.
-
-        .. code-block:: yaml
-
-           context:
-              rate_fn_decay: 0.1
-           rate_fn: np.exp(-rate_fn_decay * t)
-    """
+    """Configuration for a non-negative float expression of the time."""
 
     def contextualize(self, context: Context) -> Callable[[Any], float]:
-        """Return a function of ``t`` that runs the source."""
+        """Return a function of time ``t`` that runs the source."""
 
         def fn(t: Any) -> float:
             value = self.evaluate_typed(context, FLOAT_TG, t=t)
@@ -189,37 +133,15 @@ class NonNegativeTimeFnCfg(ExpressionCfg):
 
 
 class ModelExpressionCfg(ExpressionCfg):
-    """Configuration for a generic expression of the current ``model``.
-
-    Examples:
-        Configure context-dependent logging of model-derived values.
-
-        .. code-block:: yaml
-
-           context:
-              generation_time: 2.5
-           logs:
-              sampled: model.count_sampled_lineages()
-              expected: np.exp(-model.count_current_lineages() * generation_time)
-    """
+    """Configuration for an expression of the current model with any result."""
 
     def contextualize(self, context: Context) -> Callable[[Any], object]:
         """Return a function of ``model`` that runs the source."""
         return lambda model: self.evaluate(context, model=model)
 
 
-class ModelNonNegativeFloatCfg(ExpressionCfg):
-    """Configuration for a non-negative float expression of the current ``model``.
-
-    Examples:
-        Configure an event's rate multiplier that decreases as lineages accumulate.
-
-        .. code-block:: yaml
-
-           context:
-              baseline_rate: 1.0
-           rate_multiplier: baseline_rate / (1 + model.count_current_lineages())
-    """
+class NonNegativeModelFnCfg(ExpressionCfg):
+    """Configuration for a non-negative float expression of the current model."""
 
     def contextualize(self, context: Context) -> Callable[[Any], float]:
         """Return a function of ``model`` that runs the source."""
@@ -236,17 +158,7 @@ class ModelNonNegativeFloatCfg(ExpressionCfg):
 
 
 class ModelPredicateCfg(ExpressionCfg):
-    """Configuration for a boolean expression of the current ``model``.
-
-    Examples:
-        Configure a stopping criterion based on a context-dependent threshold.
-
-        .. code-block:: yaml
-
-           context:
-              target_samples: 20
-           stop_criterion: model.count_sampled_lineages() >= target_samples
-    """
+    """Configuration for a boolean expression of the current model."""
 
     def contextualize(self, context: Context) -> Callable[[Any], bool]:
         """Return a function of ``model`` that runs the source."""
@@ -258,21 +170,7 @@ class ModelPredicateCfg(ExpressionCfg):
 
 
 class ModelActionCfg(StatementCfg):
-    """Configuration for statements acting on the current ``model``.
-
-    Examples:
-        Configure a context-dependent stop hook to update the model state
-        after an accepted simulation trial.
-
-        .. code-block:: yaml
-
-           context:
-              rho_A: 0.5
-              rho_B: 0.6
-           stop_hook: |
-              model.rho_sample(rho_A, "A", removal=False)
-              model.rho_sample(rho_B, "B", removal=True)
-    """
+    """Configuration for statements acting on the current model."""
 
     def contextualize(self, context: Context) -> Callable[[Any], None]:
         """Return a function of ``model`` that runs the source."""
@@ -284,17 +182,7 @@ class ModelActionCfg(StatementCfg):
 
 
 class OutputHookCfg(StatementCfg):
-    """Configuration for statements of the current ``model`` and the sample's ``output_dir``.
-
-    Examples:
-        Configure an output hook that writes a sampled history to
-        a Newick file in the sample output directory.
-
-        .. code-block:: yaml
-
-           output_hooks:
-              - model.history(model.get_sampled_lineages()).dump(output_dir / "sampled.nwk")
-    """
+    """Configuration for statements of the current model and the sample's output directory."""
 
     def contextualize(self, context: Context) -> Callable[[Any, Any], None]:
         """Return a function of ``model`` and ``output_dir`` that runs the source."""

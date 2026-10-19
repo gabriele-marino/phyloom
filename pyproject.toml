@@ -1,6 +1,6 @@
 [project]
 name = "phyloom"
-version = "0.1.0"
+version = "0.2.0"
 description = "Design and run stochastic phylogenetic tree and network simulators with minimal boilerplate"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -30,13 +30,19 @@ docs = [
     "sphinx-copybutton==0.5.2",
     "sphinx-rtd-theme==3.1.0",
 ]
+benchmarks = [
+    "matplotlib==3.10.9",
+    "treesimulator==0.2.30",
+]
 
 [tool.pyright]
 extraPaths = ["docs/_ext"]
 typeCheckingMode = "strict"
 
 [tool.poe.tasks]
-docs = "sphinx-build -b html docs docs/_build/html"
+docs = ["doctest", "html"]
+html = "sphinx-build -b html docs docs/_build/html"
+doctest = "sphinx-build -b doctest docs docs/_build/doctest"
 
 [project.scripts]
 phyloom = "phyloom.main:main"

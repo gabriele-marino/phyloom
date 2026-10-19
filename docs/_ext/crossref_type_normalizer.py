@@ -8,14 +8,15 @@ from sphinx.util.typing import ExtensionMetadata
 from phyloom import types
 
 _ROLES: dict[str, str] = {
-    "typing.Any": "obj",
-    "typing.Literal": "obj",
-    "typing.TypeGuard": "obj",
-    "typing.Self": "obj",
+    "pathlib.Path": "class",
     "pandas.DataFrame": "class",
-    "random.Random": "class",
     "phyloom.configs.core.ModelCfg": "type",
     "phyloom.configs.hazards.HazardCfg": "type",
+    "random.Random": "class",
+    "typing.Any": "obj",
+    "typing.Literal": "obj",
+    "typing.Self": "obj",
+    "typing.TypeGuard": "obj",
 }
 _ROLES.update(
     {

@@ -1,10 +1,10 @@
 # ⏳🔀 Age-dependent branching (`phyloom-adb`)
 
-A Phyloom plugin for binary **age-dependent branching** (ADB) processes with lineage states, selectable from YAML with `spec: adb`. It shows how to give every lineage its own clock with scheduled actions, and how to accept YAML expressions that depend on a lineage's state.
+A Phyloom plugin for binary **age-dependent branching** (ADB) processes with lineage states. It shows how to give every lineage its own clock with scheduled actions, and how to accept YAML expressions that depend on a lineage's state.
 
 ## 🧬 The model
 
-In a binary age-dependent branching process, also known as a Bellman-Harris process, every individual lives for a random lifetime drawn from a general distribution. At the end of its life, it either dies or splits into two new individuals, which start their own lifetimes from age zero. This plugin simulates the multi-type version of the process:
+In a binary age-dependent branching process, also known as a Bellman-Harris process (Harris, 1963), every individual lives for a random lifetime drawn from a general distribution. At the end of its life, it either dies or splits into two new individuals, which start their own lifetimes from age zero. The classic application is cell proliferation, in which a cell that has just divided is unlikely to divide again immediately, and whose history can be recorded as a cell lineage tree by genetic lineage tracing (Seidel and Stadler, 2022). This plugin simulates the multi-type version of the process:
 
 1. Every lineage carries a discrete state, such as `A` or `B`.
 2. When a lineage begins, it draws its lifetime from a distribution that depends on its state.
@@ -26,13 +26,13 @@ Read the files in this order. Docstrings document the API; `#` comments walk thr
 
 ## 💡 Examples
 
-The [`examples/`](https://github.com/gabriele-marino/phyloom/tree/main/plugins/phyloom-adb/examples) folder holds runnable configurations. From the project folder, run any of them with:
+Run a configuration from the project folder with `uv run phyloom examples/<config>.yaml`.
 
-```bash
-uv sync
-uv run phyloom examples/<config>.yaml
-```
-
-| Configuration | Description |
+| Configuration | What it simulates |
 | --- | --- |
-| [`ADB-multistate.yaml`](https://github.com/gabriele-marino/phyloom/blob/main/plugins/phyloom-adb/examples/ADB-multistate.yaml) | The initial lineage is in state `A` or `B`. Each lineage draws a Gamma lifetime with a state-specific shape and scale, and dies at the end of it with a state-specific probability; otherwise, each of its two descendants independently draws its state from the transition row of its parent's state |
+| [`ADB-multistate.yaml`](https://github.com/gabriele-marino/phyloom/blob/main/plugins/phyloom-adb/examples/ADB-multistate.yaml) | Two states, `A` and `B`, with Gamma lifetimes (fixed shapes above one, mean drawn per sample), state-specific death probabilities, and independent state switches of the two descendants at each split. Trials run up to a maximum time and are kept if at least a minimum number of lineages is still alive; each sample stores the full history tree and the number of extant lineages per state. |
+
+## 🎓 References
+
+- Harris, T. E. (1963). *The Theory of Branching Processes*. Springer.
+- Seidel, S., and Stadler, T. (2022). TiDeTree: a Bayesian phylogenetic framework to estimate single-cell trees and population dynamic parameters from genetic lineage tracing data. *Proceedings of the Royal Society B*.

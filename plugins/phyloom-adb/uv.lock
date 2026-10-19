@@ -322,7 +322,7 @@ wheels = [
 
 [[package]]
 name = "phyloom"
-version = "0.1.0a6"
+version = "0.2.0"
 source = { editable = "../../" }
 dependencies = [
     { name = "joblib" },
@@ -346,6 +346,10 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
+benchmarks = [
+    { name = "matplotlib", specifier = "==3.10.9" },
+    { name = "treesimulator", specifier = "==0.2.30" },
+]
 dev = [
     { name = "joblib-stubs", specifier = "==1.5.2.0.20250831" },
     { name = "pandas-stubs", specifier = "==2.3.3.260113" },

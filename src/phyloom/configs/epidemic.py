@@ -156,59 +156,8 @@ class EpidemicModelCfg(ModelCfgBase):
     """Configuration for a :class:`~phyloom.simulator.epidemic.EpidemicModel`.
 
     Registered under ``"epidemic"`` in :data:`~phyloom.configs.core.MODEL_REGISTRY`.
-
-    Each event selects its rule by ``spec`` from :data:`EPIDEMIC_EVENT_RULE_REGISTRY`.
-    To add an event rule, implement the runtime
-    :class:`~phyloom.simulator.core.EventRule`, subclass
-    :class:`~phyloom.configs.core.EventRuleCfg`, implement ``contextualize``,
-    and register the class. Rules acting on one or two active lineages can
-    build on :class:`~phyloom.simulator.net.LineageEventRule` or
-    :class:`~phyloom.simulator.net.LineagePairEventRule`. Rules whose
-    opportunities depend on pool counts, such as
-    :class:`~phyloom.simulator.epidemic.Infection`, implement
-    ``opportunities`` and ``apply`` directly.
-
-    .. code-block:: python
-
-       class MyEventRule(LineageEventRule[EpidemicModel]):
-          def apply_to_lineage(self, model: EpidemicModel, lineage: NodeID):
-             ...
-
-       @EPIDEMIC_EVENT_RULE_REGISTRY.register("my-event-rule")
-       class MyEventRuleCfg(EventRuleCfg[EpidemicModel]):
-          def contextualize(self, context: Context) -> MyEventRule:
-             return MyEventRule()
-
-    Once the module defining the configuration has been imported, the rule
-    can be selected with ``spec: "my-event-rule"`` alongside the built-in
-    rules:
-
-    .. code-block:: yaml
-
-       model:
-          spec: "epidemic"
-          init_state: "I"
-          init_pools:
-             S: 1000
-          events:
-             - rule:
-                  spec: "infection"
-                  recipient_pool: "S"
-               hazard:
-                  spec: "constant"
-                  rate: 0.001
-             - rule:
-                  spec: "recovery"
-                  destination_pool: "R"
-                  sample: true
-               hazard:
-                  spec: "constant"
-                  rate: 0.5
-             - rule:
-                  spec: "my-event-rule"
-               hazard:
-                  spec: "constant"
-                  rate: 0.1
+    Each event selects its rule by ``spec`` from
+    :data:`EPIDEMIC_EVENT_RULE_REGISTRY`.
 
     Args:
         init_state: State assigned to the initial infectious lineage.

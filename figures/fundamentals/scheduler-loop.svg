@@ -22,13 +22,13 @@
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="0.6875"
-     inkscape:cx="952.72727"
-     inkscape:cy="813.09091"
-     inkscape:window-width="2176"
-     inkscape:window-height="989"
-     inkscape:window-x="1264"
-     inkscape:window-y="147"
+     inkscape:zoom="0.80816515"
+     inkscape:cx="941.63921"
+     inkscape:cy="667.56157"
+     inkscape:window-width="1512"
+     inkscape:window-height="848"
+     inkscape:window-x="0"
+     inkscape:window-y="33"
      inkscape:window-maximized="0"
      inkscape:current-layer="clock-flow" />
   <title
@@ -66,6 +66,7 @@
       .decision-text { font: 500 15px system-ui, -apple-system, Segoe UI, sans-serif; fill: #475569; text-anchor: middle; }
       .decision-time { fill: #b45309; }
       .branch-label { font: 700 15px system-ui, -apple-system, Segoe UI, sans-serif; fill: #64748b; text-anchor: middle; }
+      .stop-connector { fill: none; stroke: #dc2626; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
       .stop-heading { font: 700 24px system-ui, -apple-system, Segoe UI, sans-serif; fill: #b91c1c; }
       .stop-body { font: 500 17px system-ui, -apple-system, Segoe UI, sans-serif; fill: #991b1b; }
     </style>
@@ -81,6 +82,19 @@
          d="M 0,0 12,6 0,12 Z"
          fill="#94a3b8"
          id="path1" />
+    </marker>
+    <marker
+       id="arrow-stop"
+       markerWidth="12"
+       markerHeight="12"
+       refX="12"
+       refY="6"
+       orient="auto"
+       markerUnits="userSpaceOnUse">
+      <path
+         d="M 0,0 12,6 0,12 Z"
+         fill="#dc2626"
+         id="path-arrow-stop" />
     </marker>
   </defs>
   <g
@@ -383,16 +397,17 @@
        id="text21"
        style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:15px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Stopping criterion met</text>
     <path
-       class="connector"
-       d="m 1010,1080 h 68"
-       marker-end="url(#arrow)"
-       id="path21" />
+       class="stop-connector"
+       d="m 1012.5308,1080.1311 h 61.33 7.8469"
+       marker-end="url(#arrow-stop)"
+       id="path21"
+       sodipodi:nodetypes="ccc" />
     <text
        class="branch-label"
        x="1038"
        y="1066"
        id="text22"
-       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:15px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif">Yes</text>
+       style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-size:15px;line-height:normal;font-family:system-ui, '-apple-system', 'Segoe UI', sans-serif;fill:#b91c1c">Yes</text>
     <rect
        class="stop-card"
        x="1080"

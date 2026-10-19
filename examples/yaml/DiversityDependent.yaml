@@ -1,161 +1,54 @@
-# Diversity-dependent diversification with competitive replacement
-#
-# A clade of non-innovating lineages (state `N`) diversifies until it
-# approaches a carrying capacity `K`. `N` lineages occasionally acquire a key
-# innovation and become innovating lineages (state `I`), which speciate faster.
-# Speciation of both states slows down as the clade fills up, and the
-# extinction rate of `N` lineages grows with the number of `I` lineages, so
-# innovators progressively replace incumbents. At the present (`max_time`), a
-# fraction `rho` of the surviving lineages is sampled.
-#
-# Run it from the repository root with `phyloom examples/yaml/DiversityDependent.yaml`.
-# `examples/python/DiversityDependent.py` builds the same model with the Python API.
-
-# ------------------------------------------------------------------------------
-# Dataset settings
-# ------------------------------------------------------------------------------
-
-# Directory where the dataset is written, relative to the directory phyloom is
-# run from. Splits that already exist there are skipped, not overwritten.
 output_dir: outputs/DiversityDependent-yaml
-
-# Number of accepted samples in each split. Each split gets a folder in
-# `output_dir`, with one `data/<sample-id>/` folder per sample and a `metadata.csv`
-# with one row per sample (context values, rejections, run time, and logs).
 n_samples: {train: 100, val: 10, test: 10}
-
-# Number of parallel worker processes; `-1` uses all CPU cores.
 n_jobs: -1
-
-# Master random seed: rerunning with the same seed gives the same dataset.
 seed: 42
 
-# ------------------------------------------------------------------------------
-# Context
-# ------------------------------------------------------------------------------
-
-# Parameters of one sample, drawn anew for every sample and saved in
-# `metadata.csv`. Entries are evaluated top to bottom; each is a constant, a
-# Python expression of earlier entries (NumPy is available as `np`), or a random
-# draw `{type: <method>, ...}` that calls NumPy's `Generator.<method>` with the
-# given arguments.
 context:
-  # Carrying capacity: the number of extant lineages at which speciation stops
-  # (`integers` excludes `high`: 50 to 100).
   K: {type: integers, low: 50, high: 101}
-
-  # Speciation and background extinction rates of `N` lineages, when the clade
-  # is far from `K` and there are no innovators.
   la_N: {type: uniform, low: 0.2, high: 0.4}
   mu_N: {type: uniform, low: 0.02, high: 0.05}
-
-  # The innovation speeds up speciation by a factor `r_I`, from 1.5 to 3.
   r_I: {type: uniform, low: 1.5, high: 3}
   la_I: r_I * la_N
   mu_I: {type: uniform, low: 0.02, high: 0.05}
-
-  # Rate `q` at which each `N` lineage acquires the innovation.
   q: {type: uniform, low: 0.002, high: 0.01}
-
-  # Competition strength: each extant `I` lineage adds `alpha * mu_N` to the
-  # extinction rate of every `N` lineage.
   alpha: {type: uniform, low: 0.02, high: 0.1}
-
-  # Duration of the simulation, and fraction of the surviving lineages sampled
-  # at its end.
   max_time: {type: uniform, low: 40, high: 60}
   rho: {type: uniform, low: 0.5, high: 1.0}
 
-# ------------------------------------------------------------------------------
-# Model
-# ------------------------------------------------------------------------------
-
-# The process simulated in each trial. Each event pairs a rule (what happens)
-# with a hazard (its rate per opportunity, e.g. per eligible lineage or pair).
-# Rule and hazard parameters can be expressions of the context entries.
 model:
-  # Birth-death-sampling-hybridization: forward in time, each active lineage
-  # has a state.
   spec: bdsh
   init_state: N
-
-  # An event's optional `rate_multiplier` is a Python expression of the model
-  # (and of the context entries) that scales the hazard's rate. It is
-  # re-evaluated after every step, so the rate follows the current state of
-  # the clade; a value of 0 disables the event.
   events:
-    # Speciation, one rule per state. Here, the multiplier `1 - n / K`, with `n`
-    # the number of extant lineages, makes speciation slow down linearly as the
-    # clade fills up and stop at `K` (`max` keeps it non-negative). Both states
-    # compete for the same `K`.
     - rule: {spec: birth, parent_state: N}
       hazard: {spec: constant, rate: la_N}
       rate_multiplier: max(0.0, 1 - model.count_current_lineages() / K)
     - rule: {spec: birth, parent_state: I}
       hazard: {spec: constant, rate: la_I}
       rate_multiplier: max(0.0, 1 - model.count_current_lineages() / K)
-
-    # Extinction of `N` lineages. Here, the multiplier `1 + alpha * n_I`, with
-    # n_I the number of extant `I` lineages, leaves the background rate `mu_N`
-    # unchanged before the innovation and raises it as innovators diversify.
     - rule: {spec: death, state: N}
       hazard: {spec: constant, rate: mu_N}
       rate_multiplier: 1 + alpha * model.count_current_lineages("I")
-
-    # Extinction of `I` lineages, at a constant rate.
     - rule: {spec: death, state: I}
       hazard: {spec: constant, rate: mu_I}
-
-    # Key innovation: a migration replaces an `N` lineage with an `I` lineage.
-    # It is one-way, and can happen independently in several `N` lineages.
     - rule: {spec: migration, source_state: N, target_state: I}
       hazard: {spec: constant, rate: q}
-
-  # Deterministic actions: each entry runs its action, Python statements with
-  # `model` in scope, at the given times (`|` keeps the lines together as one
-  # block). Here, at `max_time`, `rho_sample` samples each extant lineage of the
-  # given state independently with probability `rho`.
   schedule:
     - times: [max_time]
       action: |
         model.rho_sample(rho, "N", removal=False)
         model.rho_sample(rho, "I", removal=False)
 
-# ------------------------------------------------------------------------------
-# Trials
-# ------------------------------------------------------------------------------
-
-# Upper bound on simulated time: events and actions due exactly at `max_time`
-# still happen. Here, it is the `max_time` context entry (the right-hand side is
-# an expression). There is no `stop_criterion`, so every trial runs to
-# `max_time` unless the clade dies out first.
 max_time: max_time
 
-# Python expression checked when the trial ends: if false, the trial is
-# rejected and rerun with the same context. Here, it requires at least 20
-# sampled tips, at least 5 of them innovators, rejecting clades that died out
-# or in which the innovation never took hold.
 acceptance_criterion: (
     model.count_sampled_lineages() >= 20
     and model.count_sampled_lineages("I") >= 5
   )
 
-# ------------------------------------------------------------------------------
-# Outputs
-# ------------------------------------------------------------------------------
-
-# Extra `metadata.csv` columns: Python expressions evaluated on each accepted
-# trial. Here, the number of extant lineages of each state at the present,
-# which shows how far the replacement has progressed.
 logs:
   extant_N: model.count_current_lineages("N")
   extant_I: model.count_current_lineages("I")
 
-# Python statements run on each accepted trial; `output_dir` is the sample's own
-# folder (e.g. `outputs/DiversityDependent-yaml/train/data/1`). `model.history()` is
-# the full history, and `model.history(model.get_sampled_lineages())` keeps only the
-# ancestry of the sampled lineages; `dump()` writes it in Newick format. Here, both
-# are written: the full history also shows the extinct incumbents.
 output_hooks:
   - model.history().dump(output_dir / "history.nwk")
   - model.history(model.get_sampled_lineages()).dump(output_dir / "sampled.nwk")

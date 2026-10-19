@@ -1,16 +1,3 @@
-"""Structured coalescent.
-
-The genealogy of lineages sampled from a population structured into two
-subpopulations (demes), `A` and `B`, connected by migration. Backward in
-time, lineages coalesce only within their deme and migrate between demes
-at a constant rate, so two lineages in different demes must come to share
-a deme before they can merge.
-
-Run it from the repository root with `python examples/python/StructuredCoalescent.py`.
-`examples/yaml/StructuredCoalescent.yaml` builds the same model as a YAML configuration
-and explains its specifics.
-"""
-
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
@@ -26,7 +13,6 @@ from phyloom.simulator.core import Event
 from phyloom.simulator.hazards import ConstantHazard
 from phyloom.simulator.utils import run_simulations
 
-# Dataset settings.
 OUTPUT_DIR = Path("outputs/StructuredCoalescent-python")
 N_SAMPLES = {"train": 10, "val": 2, "test": 2}
 N_JOBS = -1
@@ -35,15 +21,12 @@ SEED = 43
 
 @dataclass(frozen=True)
 class Context:
-    """The parameters of one sample."""
-
     effective_population_size: int
     coalescence_rate: float
     migration_rate: float
 
 
 def draw_context(rng: np.random.Generator) -> Context:
-    """Set the parameters of one sample."""
     effective_population_size = 1
     return Context(
         effective_population_size=effective_population_size,
@@ -53,7 +36,6 @@ def draw_context(rng: np.random.Generator) -> Context:
 
 
 def build_model(ctx: Context) -> CoalescentModel:
-    """Build a fresh model for one trial."""
     return CoalescentModel(
         init_population={"A": 4, "B": 4},
         events=[
@@ -78,31 +60,20 @@ def build_model(ctx: Context) -> CoalescentModel:
 
 
 def should_stop(model: CoalescentModel, ctx: Context) -> bool:
-    """The stop criterion, checked after every step."""
     return model.count_current_lineages() == 1
 
 
 def write_outputs(model: CoalescentModel, sample_dir: Path) -> None:
-    """Write the files of an accepted trial to the sample's folder."""
     model.history().dump(sample_dir / "genealogy.nwk")
 
 
 def simulate(sample_id: int, seed: int, *, data_dir: Path) -> dict[str, object]:
-    """Generate one accepted sample and return its `metadata.csv` row.
-
-    `run_simulations` calls this once per sample, with the sample id and a
-    seed derived from the split's seed. There is no acceptance criterion, so
-    the first trial is always accepted.
-    """
-    # The sample's random stream gives one seed for the context draws, then one
-    # seed for the model of the trial.
     rng = Random(seed)
     start = perf_counter()
     ctx = draw_context(np.random.default_rng(rng.getrandbits(32)))
 
     model = build_model(ctx)
     model.rng.seed(rng.getrandbits(32))
-    # step() applies the next transition; it returns False once none is possible.
     while model.step():
         if should_stop(model, ctx):
             break
@@ -110,29 +81,22 @@ def simulate(sample_id: int, seed: int, *, data_dir: Path) -> dict[str, object]:
     sample_dir = data_dir / str(sample_id)
     sample_dir.mkdir(parents=True)
     write_outputs(model, sample_dir)
-    # One column per context parameter, then rejections and run time.
     return {
         **asdict(ctx),
-        # Every trial is accepted, but the column is kept for a uniform layout.
         "n_rejections": 0,
         "total_time": perf_counter() - start,
     }
 
 
 def main() -> None:
-    """Generate each split of the dataset."""
-    # The master seed gives one seed per split, drawn in order even for the
-    # splits that are skipped, so every split is reproducible on its own.
     rng = Random(SEED)
     for split, n_samples in N_SAMPLES.items():
         split_dir = OUTPUT_DIR / split
         split_seed = rng.getrandbits(32)
-        # Existing splits are skipped, not overwritten.
         if split_dir.exists():
             print(f"Output directory {split_dir} already exists. Skipping.")
             continue
         split_dir.mkdir(parents=True)
-        # Run the samples in parallel and collect one metadata row per sample.
         metadata = run_simulations(
             n_samples,
             partial(simulate, data_dir=split_dir / "data"),

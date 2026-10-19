@@ -1,61 +1,30 @@
-# Multi-state age-dependent branching (ADB)
-#
-# Lineages are in state `A` or `B`. Each lineage lives for a Gamma lifetime
-# with a state-specific shape and mean. At the end of it, the lineage dies with
-# a state-specific probability, or otherwise splits into two descendants, each
-# of which independently switches state with a state-specific probability.
-#
-# Run it from the project folder with `uv run phyloom examples/ADB-multistate.yaml`.
-
 output_dir: outputs/ADB-multistate
 n_samples: {train: 100, val: 10, test: 10}
 n_jobs: -1
 seed: 42
 
 context:
-  # Mean lifetime in each state. A shape above one makes lifetimes
-  # non-memoryless, so the chance of branching depends on a lineage's age. A
-  # Gamma distribution with shape `k` and scale `θ` has mean `k * θ`, so the
-  # scale follows from the mean.
   mean_lifetime_A: {type: uniform, low: 1.2, high: 1.8}
   mean_lifetime_B: {type: uniform, low: 0.7, high: 1.1}
   shape_A: 3.0
   shape_B: 4.0
   scale_A: mean_lifetime_A / shape_A
   scale_B: mean_lifetime_B / shape_B
-
-  # Probability of dying, rather than splitting, at the end of a lifetime.
   death_prob_A: {type: uniform, low: 0.35, high: 0.50}
   death_prob_B: {type: uniform, low: 0.45, high: 0.60}
-
-  # Probability that a descendant of an `A` lineage is in state `B`, and that
-  # a descendant of a `B` lineage is in state `A`.
   p_A_to_B: {type: uniform, low: 0.10, high: 0.35}
   p_B_to_A: {type: uniform, low: 0.10, high: 0.35}
-
-  # Initial state, `A` or `B` with equal probability.
   init_state: {type: choice, a: "['A', 'B']", p: "[0.5, 0.5]"}
 
-# The `adb` model of this plugin. Its expressions can use `model`, the
-# lineage's `state`, and the context values, so context entries must not be
-# named `model` or `state`.
 model:
   spec: adb
   init_state: "{init_state}"
-
-  # Lifetime of a new lineage, drawn from the model's seeded generator
-  # `model.rng`.
   lifetime_func: >-
     model.rng.gammavariate(
       shape_A if state == "A" else shape_B,
       scale_A if state == "A" else scale_B
     )
-
-  # Probability that a lineage dies at the end of its lifetime.
   death_prob: death_prob_A if state == "A" else death_prob_B
-
-  # States of the two descendants, drawn independently from the transition
-  # row of the parent's state.
   get_child_states: >-
     model.rng.choices(
       ["A", "B"],
@@ -64,17 +33,14 @@ model:
       k=2
     )
 
-# Simulate up to time 8, and keep histories with at least ten lineages alive
-# at that time.
 max_time: 8.0
+
 acceptance_criterion: model.count_current_lineages() >= 10
 
-# Number of lineages alive in each state at the end of the simulation.
 logs:
   extant_A: model.count_current_lineages("A")
   extant_B: model.count_current_lineages("B")
   extant_total: model.count_current_lineages()
 
-# Full history, with dead and alive lineages: the model has no sampling.
 output_hooks:
   - model.history().dump(output_dir / "history.nwk")

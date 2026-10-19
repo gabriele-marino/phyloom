@@ -3,12 +3,13 @@
 from phyloom.configs.roots._context import ContextCfg, DistributionCfg
 from phyloom.configs.roots._float import FloatCfg, FloatSequenceCfg
 from phyloom.configs.roots._int import IntCfg
+from phyloom.configs.roots._post import PostCommandCfg
 from phyloom.configs.roots._source import (
     ExpressionCfg,
     ModelActionCfg,
     ModelExpressionCfg,
-    ModelNonNegativeFloatCfg,
     ModelPredicateCfg,
+    NonNegativeModelFnCfg,
     NonNegativeTimeFnCfg,
     NumPyExpressionCfg,
     OutputHookCfg,
@@ -25,11 +26,12 @@ __all__ = [
     "IntCfg",
     "ModelActionCfg",
     "ModelExpressionCfg",
-    "ModelNonNegativeFloatCfg",
     "ModelPredicateCfg",
+    "NonNegativeModelFnCfg",
     "NonNegativeTimeFnCfg",
     "NumPyExpressionCfg",
     "OutputHookCfg",
+    "PostCommandCfg",
     "StatementCfg",
     "StrCfg",
     "StrPairCfg",

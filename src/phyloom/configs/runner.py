@@ -20,6 +20,7 @@ from phyloom.configs.roots import (
     ModelExpressionCfg,
     ModelPredicateCfg,
     OutputHookCfg,
+    PostCommandCfg,
 )
 from phyloom.configs.utils import contextualize_optional
 from phyloom.simulator.utils import run_simulations
@@ -34,23 +35,20 @@ METADATA_FILENAME = "metadata.csv"
 class Runner(BaseModel):
     """Entry point for the dataset-generation pipeline.
 
-    The runner manages the full simulation lifecycle: it materializes
-    sample-specific context variables, creates and advances a model,
-    evaluates stopping and acceptance criteria, applies hooks, and
-    records the resulting sample.
+    For every sample, the runner materializes sample-specific values from the
+    context priors, builds and advances a model, evaluates the stopping and
+    acceptance criteria, and records the accepted sample. An unsplit run
+    writes its output to ``output_dir``, and a split run writes each split to
+    ``output_dir/<split>`` with the same layout:
 
-    For unsplit executions, all output is written directly to ``output_dir``.
-    When configured with splits, outputs are segmented into
-    ``output_dir/<split>``, maintaining an identical directory structure:
-
-    * ``data/`` subdirectory: stores a dedicated subdirectory for each accepted
-      sample, containing all files produced by ``output_hooks``.
-    * ``metadata.csv``: Logs sample-level metadata, including the materialized
-      context, log results, rejection count (``n_rejections``), and total
-      wall-clock execution time (``total_time``).
-    * Timeout and rejection logs: automatically records any contexts that
-      time out or exceed the maximum rejection threshold to dedicated CSV
-      files within the same directory.
+    * ``data/<sample_id>/``: the files written by ``output_hooks`` and
+      ``post_commands`` for each accepted sample;
+    * ``metadata.csv``: one row per sample, with its materialized context values,
+      its ``logs``, the number of rejected trials (``n_rejections``), and the
+      wall-clock run time (``total_time``);
+    * ``timed_out_contexts.csv`` and ``max_rejections_exceeded_contexts.csv``:
+      the materialized context values abandoned after a timeout or after too many
+      rejections, if any.
 
     Args:
         output_dir: Root directory for generated data. An unsplit run writes
@@ -61,12 +59,13 @@ class Runner(BaseModel):
             ``-1`` uses all available CPUs.
         seed: Optional seed for the random number generator used to derive per-sample
             seeds. If ``None``, a non-deterministic seed source is used.
-        context: Named expressions and random draws materialized independently
-            for each sample. They can be used in the model configuration,
-            stopping and acceptance criteria, logs, and output hooks.
-            Contexts that time out or exceed the maximum rejection threshold are
-            replaced by new draws from the same configuration. The final materialized
-            context for each accepted sample is included in ``metadata.csv``.
+        context: Priors of the parameters, as named random draws, constants,
+            and derived expressions. Sample-specific values are drawn from these
+            priors, and can be used in the model configuration, stopping and
+            acceptance criteria, logs, hooks and post-commands. Rejected trials are
+            rerun with the same values; values whose trials time out or exceed the
+            maximum rejection threshold are replaced by a new draw from the priors.
+            The values of each accepted sample are recorded in ``metadata.csv``.
         model: Registered model configuration to materialize for each trial.
         max_time: Optional inclusive upper bound on simulated time.
         stop_criterion: Optional model predicate evaluated after each
@@ -85,8 +84,11 @@ class Runner(BaseModel):
         logs: Mapping from metadata column names to model expressions evaluated
             after an accepted trial. Their results become columns in
             ``metadata.csv``.
-        output_hooks: Output-hook statements evaluated after each accepted
-            trial. They can write files to that sample's output directory.
+        output_hooks: Output-hook statements run in order after each accepted
+            trial. They can write files to the sample's output directory.
+        post_commands: Shell commands run in order, last, after the output hooks
+            of each accepted trial, such as external simulators of sequence or
+            trait evolution that read the files written by the hooks.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -107,6 +109,7 @@ class Runner(BaseModel):
     logs: dict[str, ModelExpressionCfg] = {}
 
     output_hooks: tuple[OutputHookCfg, ...]
+    post_commands: tuple[PostCommandCfg, ...] = ()
 
     def _generate_sample(
         self, sample_id: SampleID, seed: Seed, *, data_dir: Path
@@ -173,6 +176,8 @@ class Runner(BaseModel):
                 output_dir.mkdir(parents=True)
                 for hook in self.output_hooks:
                     hook.contextualize(context)(model, output_dir)
+                for command in self.post_commands:
+                    command.run(context, output_dir)
 
                 return {
                     **context,

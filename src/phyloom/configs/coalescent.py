@@ -93,47 +93,8 @@ class CoalescentModelCfg(ModelCfgBase):
     """Configuration for a :class:`~phyloom.simulator.coalescent.CoalescentModel`.
 
     Registered under ``"coalescent"`` in :data:`~phyloom.configs.core.MODEL_REGISTRY`.
-
-    Each event selects its rule by ``spec`` from :data:`COALESCENT_EVENT_RULE_REGISTRY`.
-    To add an event rule, implement the runtime
-    :class:`~phyloom.simulator.core.EventRule`, subclass
-    :class:`~phyloom.configs.core.EventRuleCfg`, implement ``contextualize``,
-    and register the class. Rules acting on one or two active lineages can
-    build on :class:`~phyloom.simulator.net.LineageEventRule` or
-    :class:`~phyloom.simulator.net.LineagePairEventRule`.
-
-    .. code-block:: python
-
-       class MyEventRule(LineageEventRule[CoalescentModel]):
-          def apply_to_lineage(self, model: CoalescentModel, lineage: NodeID):
-             ...
-
-       @COALESCENT_EVENT_RULE_REGISTRY.register("my-event-rule")
-       class MyEventRuleCfg(EventRuleCfg[CoalescentModel]):
-          def contextualize(self, context: Context) -> MyEventRule:
-             return MyEventRule()
-
-    Once the module defining the configuration has been imported, the rule
-    can be selected with ``spec: "my-event-rule"`` alongside the built-in
-    rules:
-
-    .. code-block:: yaml
-
-       model:
-          spec: "coalescent"
-          init_population:
-             A: 10
-          events:
-             - rule:
-                  spec: "coalesce"
-               hazard:
-                  spec: "constant"
-                  rate: 1.0
-             - rule:
-                  spec: "my-event-rule"
-               hazard:
-                  spec: "constant"
-                  rate: 0.1
+    Each event selects its rule by ``spec`` from
+    :data:`COALESCENT_EVENT_RULE_REGISTRY`.
 
     Args:
         init_population: Positive number of initial active lineages for each

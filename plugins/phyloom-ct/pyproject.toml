@@ -8,7 +8,7 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "phyloom>=0.1.0",
+    "phyloom",
 ]
 
 [project.entry-points."phyloom.plugins"]

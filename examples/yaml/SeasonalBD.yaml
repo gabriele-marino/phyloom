@@ -1,0 +1,45 @@
+output_dir: outputs/SeasonalBD-yaml
+n_samples: {train: 100, val: 10, test: 10}
+n_jobs: -1
+seed: 42
+
+context:
+  R_0: {type: lognormal, mean: 1.0, sigma: 0.2}
+  mu: {type: uniform, low: 0.25, high: 0.6}
+  la_0: R_0 * mu
+  amplitude: {type: uniform, low: 0.3, high: 0.9}
+  period: 1.0
+  peak_time: {type: uniform, low: 0.0, high: 1.0}
+  p: {type: uniform, low: 0.1, high: 0.4}
+  psi: mu * p
+  death_rate: mu - psi
+  n_leaves: {type: integers, low: 20, high: 41}
+
+model:
+  spec: bdsh
+  init_state: I
+  events:
+    - rule: {spec: birth}
+      hazard:
+        spec: numeric
+        rate_fn: la_0 * (1 + amplitude * np.cos(2 * np.pi * (t - peak_time) / period))
+        initial_dt: 1 / la_0
+    - rule: {spec: death}
+      hazard: {spec: constant, rate: death_rate}
+    - rule: {spec: sampling, removal: true}
+      hazard: {spec: constant, rate: psi}
+
+stop_criterion: model.count_sampled_lineages() == n_leaves
+
+acceptance_criterion: model.count_current_lineages() > 0
+
+logs:
+  n_sampled_in_high_season: sum(
+      1
+      for l in model.get_sampled_lineages()
+      if np.cos(2 * np.pi * (model.time_of(l) - peak_time) / period) > 0
+    )
+
+output_hooks:
+  - model.history().dump(output_dir / "history.nwk")
+  - model.history(model.get_sampled_lineages()).dump(output_dir / "sampled.nwk")

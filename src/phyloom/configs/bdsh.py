@@ -242,52 +242,7 @@ class BDSHModelCfg(ModelCfgBase):
     """Configuration for a :class:`~phyloom.simulator.bdsh.BDSHModel`.
 
     Registered under ``"bdsh"`` in :data:`~phyloom.configs.core.MODEL_REGISTRY`.
-
     Each event selects its rule by ``spec`` from :data:`BDSH_EVENT_RULE_REGISTRY`.
-    To add an event rule, implement the runtime
-    :class:`~phyloom.simulator.core.EventRule`, subclass
-    :class:`~phyloom.configs.core.EventRuleCfg`, implement ``contextualize``,
-    and register the class. Rules acting on one or two active lineages can
-    build on :class:`~phyloom.simulator.net.LineageEventRule` or
-    :class:`~phyloom.simulator.net.LineagePairEventRule`.
-
-    .. code-block:: python
-
-       class MyEventRule(LineageEventRule[BDSHModel]):
-          def apply_to_lineage(self, model: BDSHModel, lineage: NodeID):
-             ...
-
-       @BDSH_EVENT_RULE_REGISTRY.register("my-event-rule")
-       class MyEventRuleCfg(EventRuleCfg[BDSHModel]):
-          def contextualize(self, context: Context) -> MyEventRule:
-             return MyEventRule()
-
-    Once the module defining the configuration has been imported, the rule
-    can be selected with ``spec: "my-event-rule"`` alongside the built-in
-    rules:
-
-    .. code-block:: yaml
-
-       model:
-          spec: "bdsh"
-          init_state: "I"
-          events:
-             - rule:
-                  spec: "birth"
-               hazard:
-                  spec: "constant"
-                  rate: 1.0
-             - rule:
-                  spec: "sampling"
-                  removal: true
-               hazard:
-                  spec: "constant"
-                  rate: 0.5
-             - rule:
-                  spec: "my-event-rule"
-               hazard:
-                  spec: "constant"
-                  rate: 0.1
 
     Args:
         init_state: State assigned to the initial active lineage.

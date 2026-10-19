@@ -1,0 +1,39 @@
+output_dir: outputs/BDAliSim-yaml
+n_samples: {train: 100, val: 10, test: 10}
+n_jobs: -1
+seed: 42
+
+context:
+  R_0: {type: uniform, low: 1.5, high: 4.0}
+  mu: {type: uniform, low: 0.25, high: 0.6}
+  p: {type: uniform, low: 0.1, high: 0.5}
+  la: R_0 * mu
+  death_rate: mu * (1 - p)
+  psi: mu * p
+  n_leaves: {type: integers, low: 20, high: 41}
+  clock_rate: {type: uniform, low: 0.001, high: 0.01}
+  seq_length: {type: integers, low: 500, high: 1001}
+  alisim_seed: {type: integers, low: 1, high: 2**31}
+
+model:
+  spec: bdsh
+  init_state: I
+  events:
+    - rule: {spec: birth}
+      hazard: {spec: constant, rate: la}
+    - rule: {spec: death}
+      hazard: {spec: constant, rate: death_rate}
+    - rule: {spec: sampling, removal: true}
+      hazard: {spec: constant, rate: psi}
+
+stop_criterion: model.count_sampled_lineages() == n_leaves
+
+acceptance_criterion: model.count_current_lineages() > 0
+
+output_hooks:
+  - model.history(model.get_sampled_lineages()).dump(output_dir / "sampled.nwk")
+
+post_commands:
+  - iqtree3 --alisim {output_dir}/alignment -t {output_dir}/sampled.nwk
+    -m JC --length {seq_length} --branch-scale {clock_rate}
+    --seed {alisim_seed} -af fasta

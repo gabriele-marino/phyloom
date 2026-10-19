@@ -1,128 +1,38 @@
-# Birth-death-sampling-hybridization (BDSH) networks
-#
-# Lineages branch and are sampled without being removed, while pairs of
-# lineages hybridize through three competing events: lineage-degenerative
-# (LDH), lineage-neutral (LNH), and lineage-generative (LGH) hybridization. Each
-# event has its own rate, drawn independently for each sample, so the dataset
-# covers networks dominated by one kind of hybridization as well as mixtures.
-#
-# Run it from the repository root with `phyloom examples/yaml/BDSH.yaml`.
-# `examples/python/BDSH.py` builds the same model with the Python API.
-
-# ------------------------------------------------------------------------------
-# Dataset settings
-# ------------------------------------------------------------------------------
-
-# Directory where the dataset is written, relative to the directory phyloom is
-# run from. Splits that already exist there are skipped, not overwritten.
 output_dir: outputs/BDSH-yaml
-
-# Number of accepted samples in each split. Each split gets a folder in
-# `output_dir`, with one `data/<sample-id>/` folder per sample and a `metadata.csv`
-# with one row per sample (context values, rejections, run time, and logs).
 n_samples: {train: 10, val: 2, test: 2}
-
-# Number of parallel worker processes; `-1` uses all CPU cores.
 n_jobs: -1
-
-# Master random seed: rerunning with the same seed gives the same dataset.
 seed: 45
 
-# ------------------------------------------------------------------------------
-# Context
-# ------------------------------------------------------------------------------
-
-# Parameters of one sample, drawn anew for every sample and saved in
-# `metadata.csv`. Entries are evaluated top to bottom; each is a constant, a
-# Python expression of earlier entries (NumPy is available as `np`), or a random
-# draw `{type: <method>, ...}` that calls NumPy's `Generator.<method>` with the
-# given arguments.
 context:
-  # Number of samples, and per-lineage birth and sampling rates (all fixed).
   la: 0.5
   sampling_rate: 0.25
   n_leaves: 50
-
-  # One rate per hybridization event, each drawn independently. They apply to
-  # each *pair* of active lineages, so their totals grow as n(n - 1)/2 with n
-  # lineages.
   ldh_rate: {type: uniform, low: 0.0005, high: 0.003}
   lnh_rate: {type: uniform, low: 0.0005, high: 0.003}
   lgh_rate: {type: uniform, low: 0.0005, high: 0.003}
 
-# ------------------------------------------------------------------------------
-# Model
-# ------------------------------------------------------------------------------
-
-# The process simulated in each trial. Each event pairs a rule (what happens)
-# with a hazard (its rate per opportunity, e.g. per eligible lineage or pair).
-# Rule and hazard parameters can be expressions of the context entries.
 model:
-  # Birth-death-sampling-hybridization: forward in time, each active lineage
-  # has a state.
   spec: bdsh
   init_state: A
-
   events:
-    # Birth applies to every lineage, hybrids included, and both descendants
-    # keep the parent's state.
     - rule: {spec: birth}
       hazard: {spec: constant, rate: la}
-
-    # `removal: false` records a sample and keeps the lineage active. There is
-    # no death event, so the process can never die out.
     - rule: {spec: sampling, removal: false}
       hazard: {spec: constant, rate: sampling_rate}
-
-    # The three hybridization events compete. Without parent-state filters,
-    # every pair of active lineages is an opportunity for each of them, so the
-    # next hybridization is an LDH with probability
-    # `ldh_rate / (ldh_rate + lnh_rate + lgh_rate)`, and so on. `hybrid_state`
-    # labels each event's hybrids, so the output records which event created
-    # them.
-
-    # LDH ends both parents and replaces them with one hybrid lineage: the
-    # number of lineages drops by one (e.g. two species merging completely).
     - rule: {spec: ldh, hybrid_state: H_LDH}
       hazard: {spec: constant, rate: ldh_rate}
-
-    # LNH keeps one parent active; its new offspring merges with the other
-    # parent, which ends: the number of lineages is unchanged.
     - rule: {spec: lnh, hybrid_state: H_LNH}
       hazard: {spec: constant, rate: lnh_rate}
-
-    # LGH keeps both parents active and merges their new offspring into the
-    # hybrid: the number of lineages grows by one (e.g. hybrid speciation).
     - rule: {spec: lgh, hybrid_state: H_LGH}
       hazard: {spec: constant, rate: lgh_rate}
 
-# ------------------------------------------------------------------------------
-# Trials
-# ------------------------------------------------------------------------------
-
-# Python expression checked after every step: the trial ends as soon as it is
-# true. Here, it ends once `n_leaves` tips are sampled, which fixes the tree size.
 stop_criterion: model.count_sampled_lineages() == n_leaves
 
-# Python expression checked when the trial ends: if false, the trial is
-# rejected and rerun with the same context. Here, the sampled network must
-# have at least one reticulation. A tree has edges = nodes - 1, so any extra
-# edge is a reticulation. A hybridization disappears from the sampled
-# network when one of its parents has no other sampled descendants.
 acceptance_criterion: (
     model.history(model.get_sampled_lineages()).n_edges
     > model.history(model.get_sampled_lineages()).n_nodes - 1
   )
 
-# ------------------------------------------------------------------------------
-# Outputs
-# ------------------------------------------------------------------------------
-
-# Extra `metadata.csv` columns: Python expressions evaluated on each accepted
-# trial. Here, `sampled_tips` and `reticulations` describe the sampled network,
-# i.e. how many tips and reticulations are visible in the output. As in the
-# acceptance criterion, reticulations are the edges beyond a tree's
-# `n_nodes - 1`.
 logs:
   sampled_tips: model.history(model.get_sampled_lineages()).count_leaves()
   reticulations: (
@@ -131,12 +41,6 @@ logs:
       + 1
     )
 
-# Python statements run on each accepted trial; `output_dir` is the sample's own
-# folder (e.g. `outputs/BDSH-yaml/train/data/1`). `model.history()` is the full
-# history, and `model.history(model.get_sampled_lineages())` keeps only the ancestry
-# of the sampled lineages; `dump()` writes it in Newick format. Here, both are
-# written, in extended Newick: hybrid nodes are marked with `#` and labels carry
-# states (e.g. `#243|H_LGH`).
 output_hooks:
   - model.history().dump(output_dir / "history.nwk")
-  - model.history(model.get_sampled_lineages()).dump(output_dir / "sampled-network.nwk")
+  - model.history(model.get_sampled_lineages()).dump(output_dir / "sampled.nwk")

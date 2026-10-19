@@ -32,6 +32,7 @@ extensions.extend(
 myst_enable_extensions = [
     "dollarmath",
 ]
+myst_heading_anchors = 3
 
 intersphinx_mapping = {
     "joblib": ("https://joblib.readthedocs.io/en/stable/", None),
@@ -44,7 +45,7 @@ intersphinx_mapping = {
 html_show_sourcelink = False
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
-html_css_files = ["hide_home_title.css"]
+html_css_files = ["hide_home_title.css", "wrap_tables.css"]
 
 autodoc_default_options = {"show-inheritance": True}
 autodoc_member_order = "bysource"

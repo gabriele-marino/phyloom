@@ -39,7 +39,7 @@ jobs:
       - name: Run Python tests
         run: uv run --frozen pytest
 
-      - name: Build HTML and run Sphinx doctests
+      - name: Build HTML documentation
         run: uv run --frozen --group docs poe docs
 
       - name: Upload Pages artifact

@@ -12,20 +12,7 @@ if TYPE_CHECKING:
 
 
 class IntCfg(RootModel[NumPyExpressionCfg]):
-    """Configuration for an integer-valued expression.
-
-    Examples:
-        Configure a context-dependent integer value.
-
-        .. code-block:: yaml
-
-           context:
-              max_bracketing_steps:
-                 type: integers
-                 low: 16
-                 high: 32
-           max_bracketing_steps: max_bracketing_steps
-    """
+    """Configuration for an integer-valued NumPy expression."""
 
     root: NumPyExpressionCfg
 
