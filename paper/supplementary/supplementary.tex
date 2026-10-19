@@ -44,7 +44,7 @@
 \linenumbers
 
 \section{Birth-death-sampling-hybridization models}
-\label{sec:app-bdsh}
+\label{sec:bdsh-models}
 
 The birth-death-sampling-hybridization (\texttt{bdsh}) model simulates a
 population of lineages forward in time, from a single ancestor in a given
@@ -404,7 +404,7 @@ output_hooks:
 \end{lstlisting}
 
 \subsection{BDSH: three kinds of hybridization}
-\label{ex:bdsh}
+\label{sec:bdsh}
 
 This example generates phylogenetic networks under a birth-death process with
 hybridization~\citep{zhang2018speciesnetwork, justison2023siphynetwork}.
@@ -484,7 +484,7 @@ output_hooks:
 \end{lstlisting}
 
 \subsection{SeasonalBD: a seasonal transmission rate}
-\label{ex:seasonalbd}
+\label{sec:seasonal-bd}
 
 Many infections, such as influenza, are transmitted more efficiently in some
 seasons than in others. This is a birth-death process whose transmission rate is
@@ -559,7 +559,7 @@ output_hooks:
 \end{lstlisting}
 
 \subsection{DiversityDependent: diversity dependence and competitive replacement}
-\label{ex:divdep}
+\label{sec:diversity-dependent}
 
 \begin{figure}[ht]
   \centering
@@ -648,7 +648,7 @@ output_hooks:
 \end{lstlisting}
 
 \subsection{BDAliSim: alignments along birth-death trees}
-\label{ex:bdalisim}
+\label{sec:bd-alisim}
 
 This example requires IQ-TREE 3~\citep{wong2026iqtree3}, which provides
 AliSim~\citep{lytrong2022alisim}, installed with its \texttt{iqtree3} command on
@@ -660,7 +660,7 @@ kept only if the epidemic is still ongoing. A post command, run last for each
 sample, then passes the sampled tree to AliSim, which simulates a DNA alignment
 along it under the Jukes-Cantor model~\citep{jukes1969evolution}. Branch
 lengths, in units of time, are converted into substitutions per site by
-\texttt{--branch-scale}, with a strict clock rate drawn for every sample, and
+\texttt{-{}-branch-scale}, with a strict clock rate drawn for every sample, and
 the length of the alignment is drawn uniformly between 500 and 1000 sites. Each
 sample stores the sampled tree (\texttt{sampled.nwk}), the simulated alignment
 in FASTA format (\texttt{alignment.fa}), and the AliSim log
@@ -710,7 +710,7 @@ post_commands:
 
 % -----------------------------------------------------------------------------
 \section{The coalescent}
-\label{sec:app-coal}
+\label{sec:coalescent-models}
 
 Coalescent models describe the genealogy of a sample backward in time, from the
 sampled lineages to their most recent common
@@ -913,7 +913,7 @@ output_hooks:
 
 % -----------------------------------------------------------------------------
 \section{Compartmental epidemics}
-\label{sec:app-epi}
+\label{sec:epidemic-models}
 
 Compartmental models describe an epidemic in a finite host
 population~\citep{kermack1927contribution, hethcote2000mathematics}, so that
@@ -1143,7 +1143,7 @@ histories, or ages), waiting times that belong to a single lineage
 the model's history (tracing the contacts of a sampled individual).
 
 \subsection{Age-dependent branching}
-\label{sec:app-adb}
+\label{sec:age-dependent-branching}
 
 In a binary age-dependent branching process, also known as a Bellman-Harris
 process~\citep{harris1963theory}, every individual lives for a random lifetime
@@ -1229,7 +1229,7 @@ output_hooks:
 \end{lstlisting}
 
 \subsection{Contact tracing}
-\label{sec:app-ct}
+\label{sec:contact-tracing}
 
 Infected individuals are lineages, each in a state, such as exposed or
 infectious. They transmit, creating new infected individuals, change state, and
@@ -1353,7 +1353,7 @@ queried during and after the simulation. In practice, a tree costs roughly
 0.08\,ms and 8\,kB per unit of $n/p$, so memory, not time, is the limiting
 factor: 16\,GB of RAM allows $n/p$ up to about two million. This bounds the population,
 rather than the tree, that forward-time models can handle. Backward-time
-coalescent models (Section~\ref{sec:app-coal}) instead simulate only the ancestry of
+coalescent models (Section~\ref{sec:coalescent-models}) instead simulate only the ancestry of
 the samples, so $m$ scales with the number of samples rather than with the
 population size, which makes them the better choice for sparsely sampled
 large populations.
