@@ -108,7 +108,7 @@ What $m$ amounts to depends on the model. Forward-time models, such as birth-dea
 We evaluated this by generating trees with a growing number $n$ of sampled tips under a constant-rate birth-death model, in which infectious lineages branch at rate $\lambda = R_0\mu$ and are removed at rate $\mu = 0.4$, each removal being sampled with probability $p = 0.5$; $R_0 = \lambda/\mu = 3$ is the basic reproduction number. We compared Phyloom with [treesimulator](https://github.com/evolbioinfo/treesimulator), a pure-Python simulator that also simulates the full history:
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/gabriele-marino/phyloom/main/benchmarks/tree_size.svg" alt="Run time and memory against the number of sampled tips" width="80%"/>
+  <img src="https://raw.githubusercontent.com/gabriele-marino/phyloom/main/benchmarks/benchmarks.svg" alt="Run time and memory against the number of sampled tips" width="80%"/>
 </p>
 
 <p align="center"><em>Wall-clock time (left) and peak memory (right) to generate a tree with a given number of sampled tips (mean ± s.d. over 5 replicates; log-log axes). The dashed line has slope 1, i.e. linear scaling, fitted to the Phyloom values. Benchmarks were run single-threaded on a MacBook with an Apple M3 chip and 16 GB RAM, with Python 3.10.</em></p>
