@@ -19,9 +19,8 @@
 \lstdefinestyle{cfg}{basicstyle=\ttfamily\footnotesize}
 \usepackage{authblk}
 \usepackage[numbers,sort&compress]{natbib}
-\usepackage{xr-hyper}
-\externaldocument[S-]{../supplementary/supplementary}
 \usepackage[colorlinks=true,linkcolor=teal,citecolor=teal,urlcolor=teal]{hyperref}
+\setlength{\emergencystretch}{2em}
 
 \title{\texttt{Phyloom}: a flexible and extensible framework for simulating phylogenetic trees and networks}
 \author[1,2]{Gabriele Marino}
@@ -55,7 +54,7 @@
 
   \medskip\noindent\textbf{Availability and implementation:} \texttt{phyloom} is
   implemented in Python ($\geq$3.10), released under the MIT license, and
-  available from PyPI (\texttt{pip install phyloom}) and
+  available from PyPI (\texttt{pip install phyloom}) and from the GitHub repository
   \url{https://github.com/gabriele-marino/phyloom}. Documentation and tutorials
   are at \url{https://gabriele-marino.github.io/phyloom/home}.
 
@@ -107,7 +106,6 @@ Custom logic, such as non-Markovian dynamics with per-lineage memory, is added
 through plugins without modifying the core simulator.
 
 \section{A generic event-driven engine}
-\label{sec:engine}
 
 \texttt{Phyloom} separates what a stochastic event does from when it
 happens. A model holds a system state $X(t)$ (the current lineages, their
@@ -163,10 +161,10 @@ process exactly~\citep{anderson2007modified}.
 \end{figure}
 
 In \texttt{phyloom}, a configuration file specifies a model, a context of
-per-sample parameter priors, and stopping and acceptance rules. For every
+per-sample parameter priors, and stopping and acceptance rules (Fig.~\ref{fig:pipeline}). For every
 sample, the configuration layer validates this specification and materializes
 the context into a concrete model, which the simulator core advances with the
-engine described above (\S\ref{sec:engine}; Fig.~\ref{fig:pipeline}). A
+engine described above. A
 complete configuration is short: the file below generates 1000 trees of 100
 sampled tips each under a constant-rate birth--death process, drawing the
 birth, death, and sampling rates anew from uniform priors for every tree:
@@ -208,45 +206,31 @@ parameters that generated them are thus paired by construction, as needed for
 simulation-based calibration and likelihood-free
 estimators~\citep{voznica2022phylodeep}.
 
-\texttt{Phyloom} provides standard phylogenetic models out of the box, many
-given as complete worked configurations in the Supplementary Material:
+
+\texttt{Phyloom} provides many standard phylogenetic models out of the box, with complete configurations available in the \texttt{examples} folder of the repository. These include
 constant-rate~\citep{stadler2010sampling}, skyline~\citep{stadler2013bdsky},
 multi-type~\citep{kuhnert2016bdmm}, and
-state-dependent~\citep{maddison2007bisse} birth--death models
-(Supplementary Section~\ref{S-sec:bdsh-models}), with hybridization
-networks~\citep{justison2023siphynetwork} (Supplementary
-Section~\ref{S-sec:bdsh}); structured~\citep{notohara1990coalescent} and
+state-dependent~\citep{maddison2007bisse} birth--death models, with hybridization
+networks~\citep{justison2023siphynetwork}, structured~\citep{notohara1990coalescent} and
 serially sampled~\citep{drummond2002serial}
 coalescents~\citep{kingman1982coalescent} with arbitrary effective
-population-size trajectories~\citep{griffiths1994varying} (Supplementary
-Section~\ref{S-sec:coalescent-models}); and density-dependent
-compartmental epidemics~\citep{kermack1927contribution} (Supplementary
-Section~\ref{S-sec:epidemic-models}). In all of them, a hazard may be any expression of
-time (Supplementary Section~\ref{S-sec:seasonal-bd}), and any rate may be scaled
-by any function of the current state, such as clade diversity or prevalence
-(Supplementary Section~\ref{S-sec:diversity-dependent}).
+population-size trajectories~\citep{griffiths1994varying}, and
+density-dependent compartmental epidemics~\citep{kermack1927contribution}. In all of them, a hazard may be
+any expression of time, and any rate may be scaled
+by any function of the current state, such as clade diversity or prevalence.
 
 \texttt{Phyloom} also supports optional post-commands, which execute after the
 output hooks for each sample. This allows external simulators of sequence or
 trait evolution to be integrated seamlessly into the pipeline. For example,
 simulating an alignment along every tree requires only a single post-command
-passing the tree to \texttt{AliSim}~\citep{lytrong2022alisim}
-(Supplementary Section~\ref{S-sec:bd-alisim}).
+passing the tree to \texttt{AliSim}~\citep{lytrong2022alisim}.
 
 Processes outside the built-in families, such as non-Markovian dynamics
 with per-lineage memory, can be added by users as plugins, in a few dozen
 to a few hundred lines of code, without modifying \texttt{phyloom} itself;
-\texttt{phyloom} provides example implementations for contact
-tracing~\citep{zhukova2025contact} (Supplementary Section~\ref{S-sec:contact-tracing}) and
-age-dependent branching~\citep{harris1963theory}
-(Supplementary Section~\ref{S-sec:age-dependent-branching}).
-
-The run time and memory use of \texttt{phyloom}'s built-in models scale
-linearly with the number of simulated lineages. \texttt{Phyloom} generates
-large trees several times faster than a comparable pure-Python simulator,
-8-fold for trees of 4\,000 tips, at the cost of about 3-fold higher
-memory use (Supplementary Section~\ref{S-sec:performance}), and it
-supports parallel simulations across CPU cores with no additional setup.
+the \texttt{plugins} folder of the repository provides complete worked
+example projects, including contact tracing~\citep{zhukova2025contact} and age-dependent
+branching~\citep{harris1963theory} extensions.
 
 \section{Closing remarks}
 
@@ -275,6 +259,12 @@ researchers across these fields to investigate the underlying processes
 directly, streamlining the simulation pipeline so they can focus on
 the science rather than the implementation.
 
+\section*{Computational performance}
+\texttt{Phyloom} generates large trees several times faster than a comparable
+pure-Python simulator, at the cost of higher memory use (benchmark details
+in the project repository), and supports parallel simulations across CPU cores
+with no additional setup.
+
 \section*{Acknowledgments}
 We thank the Computational Evolution group at ETH Zurich for many insightful
 discussions, in particular Tim Vaughan for his guidance, Antoine Zwaans and
@@ -289,6 +279,6 @@ This work was funded by ETH Zurich.
 None declared.
 
 \bibliographystyle{unsrtnat}
-\bibliography{../references}
+\bibliography{references}
 
 \end{document}

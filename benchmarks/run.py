@@ -7,8 +7,8 @@ simulates the full transmission history and extracts the sampled tree from it.
 Each simulator is run until a tree with exactly the target number of sampled
 tips is produced, retrying on early extinction.
 
-The results are saved to `tree_size.csv`, which is only regenerated if it does
-not exist yet, plotted to `tree_size.svg`, and summarized in the console.
+The results are saved to `benchmarks.csv`, which is only regenerated if it does
+not exist yet, plotted to `benchmarks.svg`, and summarized in the console.
 
 Run from the repository root with the `benchmarks` dependency group:
 
@@ -33,7 +33,7 @@ from phyloom.simulator.bdsh import BDSHModel, Birth, Death, Sampling
 from phyloom.simulator.core import Event
 from phyloom.simulator.hazards import ConstantHazard
 
-CSV_PATH = Path(__file__).parent / "tree_size.csv"
+CSV_PATH = Path(__file__).parent / "benchmarks.csv"
 SEED = 42
 N_REPLICATES = 5
 N_LEAVES = [500, 1000, 2000, 4000]

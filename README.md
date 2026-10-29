@@ -113,7 +113,7 @@ We evaluated this by generating trees with a growing number $n$ of sampled tips 
 
 <p align="center"><em>Wall-clock time (left) and peak memory (right) to generate a tree with a given number of sampled tips (mean ± s.d. over 5 replicates; log-log axes). The dashed line has slope 1, i.e. linear scaling, fitted to the Phyloom values. Benchmarks were run single-threaded on a MacBook with an Apple M3 chip and 16 GB RAM, with Python 3.10.</em></p>
 
-The run time and memory of Phyloom grow close to linearly with $n$ (fitted log-log slopes of ~1.0), whereas the run time of treesimulator grows faster than linearly: Phyloom is about 3-fold faster at 500 tips and 8-fold faster at 4,000 tips. In exchange, Phyloom uses about 3-fold more memory, because each stored lineage is a full Python object that can be queried during and after the simulation. In practice, a tree costs roughly 0.08 ms and 8 kB per unit of $n/p$, so memory, not time, is the limiting factor: 16 GB of RAM allows $n/p$ up to about two million. This bounds the population, rather than the tree, that forward-time models can handle. Backward-time coalescent models instead simulate only the ancestry of the samples, so $m$ scales with the number of samples rather than with the population size, which makes them the better choice for sparsely sampled large populations.
+The run time and memory of Phyloom grow close to linearly with $n$ (fitted log-log slopes of ~1.0), whereas the run time of treesimulator grows faster than linearly: Phyloom is about 3-fold faster at 500 tips and 9-fold faster at 4,000 tips. In exchange, Phyloom uses about 3-fold more memory, because each stored lineage is a full Python object that can be queried during and after the simulation. In practice, a tree costs roughly 0.07 ms and 8 kB per unit of $n/p$, so memory, not time, is the limiting factor: 16 GB of RAM allows $n/p$ up to about two million. This bounds the population, rather than the tree, that forward-time models can handle. Backward-time coalescent models instead simulate only the ancestry of the samples, so $m$ scales with the number of samples rather than with the population size, which makes them the better choice for sparsely sampled large populations.
 
 ### 🔁 Reproducing the benchmarks
 
@@ -123,7 +123,7 @@ Run from the repository root:
 uv run --group benchmarks benchmarks/run.py
 ```
 
-The benchmark script saves its measurements to `benchmarks/tree_size.csv` and generates a plot at `benchmarks/tree_size.svg`, while also printing key statistics to the console. Because pre-computed measurements are already included in the repository, running the script out-of-the-box will simply regenerate the plot and statistics from the existing CSV. To run a fresh benchmark on your own hardware, delete `benchmarks/tree_size.csv` first. Note that exact execution times and memory usage will depend on your local hardware and environment.
+The benchmark script saves its measurements to `benchmarks/benchmarks.csv` and generates a plot at `benchmarks/benchmarks.svg`, while also printing key statistics to the console. Because pre-computed measurements are already included in the repository, running the script out-of-the-box will simply regenerate the plot and statistics from the existing CSV. To run a fresh benchmark on your own hardware, delete `benchmarks/benchmarks.csv` first. Note that exact execution times and memory usage will depend on your local hardware and environment.
 
 ## 📖 Examples and documentation
 
@@ -136,12 +136,7 @@ The [Phyloom documentation](https://gabriele-marino.github.io/phyloom/home) site
 
 ## 📝 Paper
 
-Phyloom is described in the preprint *Phyloom: a flexible and extensible framework for simulating phylogenetic trees and networks* (Gabriele Marino, Daniele Silvestro, and Tanja Stadler):
-
-- 📄 [Main text (PDF)](https://github.com/gabriele-marino/phyloom/blob/main/paper/main/main.pdf)
-- 📎 [Supplementary materials (PDF)](https://github.com/gabriele-marino/phyloom/blob/main/paper/supplementary/supplementary.pdf)
-
-The LaTeX sources are in [`paper/`](https://github.com/gabriele-marino/phyloom/tree/main/paper); build both PDFs by running [`latexmk`](https://ctan.org/pkg/latexmk) from that folder.
+Phyloom is described in the preprint [*Phyloom: a flexible and extensible framework for simulating phylogenetic trees and networks* (Gabriele Marino, Daniele Silvestro, and Tanja Stadler)](https://github.com/gabriele-marino/phyloom/blob/main/paper/main.pdf).
 
 ## 📄 License
 
