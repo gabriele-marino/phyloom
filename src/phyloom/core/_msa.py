@@ -47,11 +47,12 @@ class MSA:
     """
 
     def __init__(self, sequences: Iterable[SequenceRecord]):
-        if not sequences:
+        self._sequences = list(sequences)
+
+        if not self._sequences:
             raise ValueError("MSA must contain at least one sequence.")
 
-        self._sequences = list(sequences)
-        lengths = {seq.n_chars for seq in sequences}
+        lengths = {seq.n_chars for seq in self._sequences}
         if len(lengths) > 1:
             raise ValueError(
                 f"All sequences in the alignment must have the same length (got lengths: {lengths})."
